@@ -1,0 +1,50 @@
+.body {
+	border-top: solid 1px#DBDBDA;
+	padding: 0 40upx;
+}
+
+/*头像start*/
+.face-wapper {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	margin-top: 120upx;
+	margin-bottom: 120upx;
+}
+
+.face {
+	width: 160upx;
+	height: 160upx;
+}
+
+/*头像end*/
+
+/*注册登录start*/
+.info-wapper {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	border-bottom: solid 1px #DBDBDA;
+	padding: 20upx 0 20upx 0;
+}
+
+.words-1bl {
+	color: #808080;
+}
+
+.input {
+	width: 500upx;
+	margin-left: 40upx;
+}
+
+.kaptchaText {
+	width: 220upx;
+	margin-left: 38upx;
+	margin-right: 40upx;
+}
+
+.graywords {
+	color: #EAEAEA;
+}
+
+/*注册登录end */
