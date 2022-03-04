@@ -1,18 +1,18 @@
 <script>
-	import hcServer from '@/components/hcServer/hcServerV2.vue';
+	import server from '@/components/server/server-v3.vue';
 	export default {
 		onLaunch:async function() {
 			console.log('App Launch')
 			console.log("1" + this.serverUrl);
 			uni.setStorageSync("serverUrl", this.serverUrl);
 			
-			// let messageList = await hcServer.requestMessagebar_menu();
+			// let messageList = await server.requestMessagebar_menu();
 			// for (const item of messageList) {
 			// 	setInterval(async () => {
-			// 		let count = await hcServer.requestLtmplCount_menu(item.id);
+			// 		let count = await server.requestLtmplCount_menu(item.id);
 			// 		item.count = count;
 			// 	}, 180000);
-			// 	let count = await hcServer.requestLtmplCount_menu(item.id);
+			// 	let count = await server.requestLtmplCount_menu(item.id);
 			// 	item.count = count;
 			// 	if(count>0){
 			// 		uni.showTabBarRedDot({

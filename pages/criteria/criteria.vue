@@ -91,8 +91,8 @@
 </template>
 
 <script>
-	import hcDataTransUtils from '@/components/hcServer/hcDataTransUtils.vue';
-	import hcServer from '@/components/hcServer/hcServerV2.vue';
+	import dataTransUtils from '@/components/server/data-trans-utils.vue';
+	import server from '@/components/server/server-v3.vue';
 	export default {
 		data() {
 			return {
@@ -118,11 +118,11 @@
 			console.log("来自criteria", options);
 			let config = uni.getStorageSync(options.key);
 			//加入枚举
-			let selectMSFieldIdMap = await hcServer.getSelect(config.config.selectMSFieldIdArray);
+			let selectMSFieldIdMap = await server.getSelect(config.config.selectMSFieldIdArray);
 			let criterias = config.config.ltmpl.criterias;
-			this.criteriaItems = hcDataTransUtils.buildCriteriaItems(criterias, options, selectMSFieldIdMap);
+			this.criteriaItems = dataTransUtils.buildCriteriaItems(criterias, options, selectMSFieldIdMap);
 			console.log("来自criteria,criteriaItems", this.criteriaItems);
-			this.formData = hcDataTransUtils.buildCriteriaFormData(this.criteriaItems);
+			this.formData = dataTransUtils.buildCriteriaFormData(this.criteriaItems);
 			this.options = options;
 			console.log("来自criteria,formData", this.formData);
 		},
@@ -132,7 +132,7 @@
 			}
 			console.log("reload:", this.options);
 			this.pageInfo.pageNo = 1;
-			let query_key = await hcServer.getLtmplQueryKey(this.options);
+			let query_key = await server.getLtmplQueryKey(this.options);
 			this.initData(this.ltmplConfig, query_key, this.pageInfo);
 			this.queryKey = query_key;
 			this.totalCount = null;

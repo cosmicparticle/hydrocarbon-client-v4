@@ -41,7 +41,7 @@
 
 <script>
 	import dataPicker from "../uni-data-pickerview/uni-data-picker.js"
-	import DataPickerView from "../uni-data-pickerview/uni-data-pickerview.vue"
+	import dataPickerView from "../uni-data-pickerview/uni-data-pickerview.vue"
 
 	/**
 	 * DataPicker 级联选择
@@ -70,7 +70,7 @@
 		name: 'UniDataPicker',
 		mixins: [dataPicker],
 		components: {
-			DataPickerView
+			dataPickerView
 		},
 		props: {
 			options: {

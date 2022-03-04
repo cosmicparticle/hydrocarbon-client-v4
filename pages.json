@@ -42,7 +42,6 @@
             }
             
         }
-        
         ,{
             "path" : "pages/edit/edit",
             "style" :                                                                                    
@@ -52,26 +51,25 @@
             }
             
         }
-        ,{
-            "path" : "pages/editTest/editTest",
-            "style" :                                                                                    
-            {
-                "navigationBarTitleText": "",
-                "enablePullDownRefresh": false
-            }
+        // ,{
+        //     "path" : "pages/editTest/editTest",
+        //     "style" :                                                                                    
+        //     {
+        //         "navigationBarTitleText": "",
+        //         "enablePullDownRefresh": false
+        //     }
             
-        }
+        // }
+        // ,{
+        //     "path" : "pages/fontTest/fontTest",
+        //     "style" :                                                                                    
+        //     {
+        //         "navigationBarTitleText": "",
+        //         "enablePullDownRefresh": false
+        //     }
+        // }
         ,{
-            "path" : "pages/fontTest/fontTest",
-            "style" :                                                                                    
-            {
-                "navigationBarTitleText": "",
-                "enablePullDownRefresh": false
-            }
-            
-        }
-        ,{
-            "path" : "pages/checkList/checkList",
+            "path" : "pages/check-list/check-list",
             "style" :                                                                                    
             {
                 "navigationBarTitleText": "",
@@ -98,7 +96,7 @@
             
         }
         ,{
-            "path" : "pages/edit/baseEdit",
+            "path" : "pages/edit/base-edit",
             "style" :                                                                                    
             {
                 "navigationBarTitleText": "",

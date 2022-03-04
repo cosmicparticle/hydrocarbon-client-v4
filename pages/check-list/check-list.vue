@@ -51,7 +51,7 @@
 </template>
 
 <script>
-	import hcServer from '@/components/hcServer/hcServerV2.vue';
+	import server from '@/components/server/server-v3.vue';
 	export default {
 		data() {
 			return {
@@ -76,9 +76,9 @@
 		async onLoad(options) {
 			console.log("checkList参数:", options);
 			this.options = options;
-			let stmpl_config = await hcServer.getStmplConfig(options);
+			let stmpl_config = await server.getStmplConfig(options);
 			console.log("checkList stmpl_config:", stmpl_config);
-			let query_key = await hcServer.getGroupLtmplQueryKey({...options,condition:this.condition});
+			let query_key = await server.getGroupLtmplQueryKey({...options,condition:this.condition});
 			console.log("checkList query_key:", query_key);
 			await this.initData(stmpl_config, query_key.queryKey, this.pageInfo);
 			this.queryKey = query_key;
@@ -90,7 +90,7 @@
 			}
 			console.log("reload:", this.options);
 			this.pageInfo.pageNo = 1;
-			let query_key = await hcServer.getGroupLtmplQueryKey({...this.options,condition:this.condition});
+			let query_key = await server.getGroupLtmplQueryKey({...this.options,condition:this.condition});
 			this.initData(this.stmplConfig, query_key.queryKey, this.pageInfo);
 			this.queryKey = query_key;
 			this.totalCount = null;
@@ -129,7 +129,7 @@
 				if (pageInfo) {
 					statePageInfo = pageInfo
 				}
-				let res = await hcServer.requestQueryEntities(queryKey, statePageInfo);
+				let res = await server.requestQueryEntities(queryKey, statePageInfo);
 				// Storage[`queryKey`] = res
 				// const {isSeeTotal} = this.state
 				const dataSource = []
@@ -146,7 +146,7 @@
 			},
 			async clickShowMore() {
 				//查询总量
-				this.totalCount = await hcServer.requestTotalCount(this.queryKey.queryKey);
+				this.totalCount = await server.requestTotalCount(this.queryKey.queryKey);
 			},
 			async footerClick(options) {
 				uni.showToast({
@@ -154,7 +154,7 @@
 					icon: 'none'
 				})
 				let menuId = this.menuId;
-				let dtmplConfigKey = await hcServer.requestDtmplConfig_menu(menuId);
+				let dtmplConfigKey = await server.requestDtmplConfig_menu(menuId);
 				uni.navigateTo({
 					url: `../editTest/editTest?entityCode=${options}&dtmplConfigKey=${dtmplConfigKey}`,
 				})
@@ -195,7 +195,7 @@
 				}
 			},
 			async clickShowMore() {
-				this.totalCount = await hcServer.requestTotalCount(this.queryKey.queryKey);
+				this.totalCount = await server.requestTotalCount(this.queryKey.queryKey);
 			},
 			async changePage(options) {
 				this.pageInfo.pageNo = options.current;

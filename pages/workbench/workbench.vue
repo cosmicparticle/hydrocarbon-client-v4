@@ -106,7 +106,7 @@
 </template>
 
 <script>
-	import hcServer from '@/components/hcServer/hcServerV2.vue';
+	import server from '@/components/server/server-v3.vue';
 	export default {
 		data() {
 			return {
@@ -126,28 +126,28 @@
 			});
 			var me = this;
 			//重点工作
-			var faceplate_statistic = await hcServer.requestFaceplateStatistic_menu();
+			var faceplate_statistic = await server.requestFaceplateStatistic_menu();
 			//console.log(data); 
 			for (const item of faceplate_statistic) {
 				setInterval(async () => {
-					let count = await hcServer.requestLtmplCount_menu(item.id);
+					let count = await server.requestLtmplCount_menu(item.id);
 					item.count = count;
 				}, 180000);
-				let count = await hcServer.requestLtmplCount_menu(item.id);
+				let count = await server.requestLtmplCount_menu(item.id);
 				item.count = count;
 				item.url = "../list/list?type=menu&menuId=" + item.id;
 			}
 			me.faceplateStatistic = faceplate_statistic;
 
 			//日常工作
-			let faceplate_daily = await hcServer.requestFaceplate_menu();
+			let faceplate_daily = await server.requestFaceplate_menu();
 
 			for (const item of faceplate_daily) {
 				item.url = "../list/list?type=menu&menuId=" + item.id;
 			}
 			me.faceplateDaily = faceplate_daily;
 			//板块
-			let blocks_res = await hcServer.requestBlocks();
+			let blocks_res = await server.requestBlocks();
 			if (blocks_res.status == "suc") {
 				for (const block of blocks_res.blocks) {
 					for (const l1menu of block.l1Menus) {

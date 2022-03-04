@@ -8,7 +8,7 @@
 </template>
 
 <script>
-	import hcServer from '@/components/hcServer/hcServerV2.vue';
+	import server from '@/components/server/server-v3.vue';
 	export default {
 		data() {
 			return {
@@ -17,13 +17,13 @@
 		},
 		async onLoad(){
 			//在此处加载，用户登录后并不能第一时间看到有消息提醒
-			let messageList = await hcServer.requestMessagebar_menu();
+			let messageList = await server.requestMessagebar_menu();
 			for (const item of messageList) {
 				setInterval(async () => {
-					let count = await hcServer.requestLtmplCount_menu(item.id);
+					let count = await server.requestLtmplCount_menu(item.id);
 					item.count = count;
 				}, 180000);
-				let count = await hcServer.requestLtmplCount_menu(item.id);
+				let count = await server.requestLtmplCount_menu(item.id);
 				item.count = count;
 				if(count>0){
 					uni.showTabBarRedDot({

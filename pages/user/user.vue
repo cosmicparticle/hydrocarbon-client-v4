@@ -34,8 +34,8 @@
 </template>
 
 <script>
-	import hcServer from '@/components/hcServer/hcServerV2.vue';
-	import hcDataTransUtils from '@/components/hcServer/hcDataTransUtils.vue';
+	import server from '@/components/server/server-v3.vue';
+	import dataTransUtils from '@/components/server/data-trans-utils.vue';
 	export default {
 		data() {
 			return {
@@ -48,7 +48,7 @@
 			let detailEntity_ = null;
 			console.log(hydrocarbonToken_);
 			if (hydrocarbonToken_ && this.detailEntity == null) {
-				detailEntity_ = await hcDataTransUtils.getUserDetailEnity();
+				detailEntity_ = await dataTransUtils.getUserDetailEnity();
 				console.log('userdetailEntity', detailEntity_);
 				this.detailEntity = detailEntity_;
 			}

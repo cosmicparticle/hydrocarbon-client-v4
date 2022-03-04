@@ -6,7 +6,7 @@
 
 <script>
 	export default {
-		name: "Empty",
+		name: "empty",
 		data() {
 			return {
 

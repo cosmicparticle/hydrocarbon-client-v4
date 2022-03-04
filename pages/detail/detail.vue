@@ -21,8 +21,8 @@
 </template>
 
 <script>
-	import hcServer from '@/components/hcServer/hcServerV2.vue';
-	import hcDataTransUtils from '@/components/hcServer/hcDataTransUtils.vue';
+	import server from '@/components/server/server-v3.vue';
+	import dataTransUtils from '@/components/server/data-trans-utils.vue';
 	export default {
 		data() {
 			return {
@@ -35,8 +35,8 @@
 			uni.showLoading({
 				title: "数据加载中..."
 			});
-			let options = hcDataTransUtils.setUndefinedStrValueToNull(options_);
-			this.detailEntity = await hcDataTransUtils.getDetailEnity(options);
+			let options = dataTransUtils.setUndefinedStrValueToNull(options_);
+			this.detailEntity = await dataTransUtils.getDetailEnity(options);
 			this.menuId = this.detailEntity.menuId;
 			console.log(this.detailEntity);
 			this.options = options;
@@ -45,9 +45,9 @@
 		methods: {
 			async clickToGroupDetail(entityCode, fieldGroupId) {
 				console.log(entityCode + "_" + fieldGroupId);
-				//let dtmplConfigKey = await hcServer.requestGroupDtmplConfig_menu(this.menuId, fieldGroupId);
+				//let dtmplConfigKey = await server.requestGroupDtmplConfig_menu(this.menuId, fieldGroupId);
 				uni.navigateTo({
-					url: `../detail/detail?type=${hcServer.getGroupType(this.options.type)}&entityCode=${entityCode}&menuId=${this.options.menuId}&fieldGroupId=${fieldGroupId}&ratmplId=${this.options.ratmplId}&leafCode=${this.options.leafCode}`,
+					url: `../detail/detail?type=${server.getGroupType(this.options.type)}&entityCode=${entityCode}&menuId=${this.options.menuId}&fieldGroupId=${fieldGroupId}&ratmplId=${this.options.ratmplId}&leafCode=${this.options.leafCode}`,
 				})
 			}
 		}

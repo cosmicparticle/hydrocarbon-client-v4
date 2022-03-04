@@ -194,8 +194,8 @@
 
 <script>
 	import htzImageUpload from '@/components/htz-image-upload/htz-image-upload.vue'
-	import hcServer from '@/components/hcServer/hcServerV2.vue';
-	import hcDataTransUtils from '@/components/hcServer/hcDataTransUtils.vue';
+	import server from '@/components/server/server-v3.vue';
+	import dataTransUtils from '@/components/server/data-trans-utils.vue';
 	export default {
 		data() {
 			return {
@@ -246,9 +246,9 @@
 			uni.showLoading({
 				title: "数据加载中..."
 			});
-			let options = hcDataTransUtils.setUndefinedStrValueToNull(options_);
+			let options = dataTransUtils.setUndefinedStrValueToNull(options_);
 			console.log("edit onLoad options", options);
-			this.detailEntity = await hcDataTransUtils.getDetailEnity(options);
+			this.detailEntity = await dataTransUtils.getDetailEnity(options);
 			//组织formdata
 			let form_data = {};
 			let rule_={}
@@ -292,9 +292,9 @@
 					title: "数据加载中..."
 				});
 				//去查询数据并补充到detailEntity中
-				entitys_ds = await hcServer.getFieldGroupEntities(this.newGroupSelected);
+				entitys_ds = await server.getFieldGroupEntities(this.newGroupSelected);
 				console.log("edit select ds", entitys_ds);
-				hcDataTransUtils.unshiftGroupEntity2DetailEnity({
+				dataTransUtils.unshiftGroupEntity2DetailEnity({
 					...this.options,
 					editedEntitys: entitys_ds,
 					fieldGroupId_ref: this.newGroupSelected.fieldGroupId,
@@ -309,10 +309,10 @@
 					title: "数据加载中..."
 				});
 				//去查询数据并替换到detailEntity中
-				this.editedData.type = hcServer.getGroupStmplType(this.options.type);
-				entitys_ds = await hcServer.getFieldGroupEntities(this.editedData);
+				this.editedData.type = server.getGroupStmplType(this.options.type);
+				entitys_ds = await server.getFieldGroupEntities(this.editedData);
 				console.log("new select ds", entitys_ds);
-				hcDataTransUtils.refreshGroupEntity2DetailEnity({
+				dataTransUtils.refreshGroupEntity2DetailEnity({
 					...this.options,
 					editedEntitys: entitys_ds,
 					fieldGroupId_ref: this.editedData.fieldGroupId,
@@ -327,7 +327,7 @@
 				console.log("baseEditFormData",this.currentBaseEditFormData);
 				
 				//追加显示
-				hcDataTransUtils.refreshGroupEntity2DetailEnity({
+				dataTransUtils.refreshGroupEntity2DetailEnity({
 					...this.options,
 					editedEntitys: [this.currentBaseEditFormData],
 					fieldGroupId_ref: this.currentBaseEditFormData.fieldGroupId,
@@ -378,8 +378,8 @@
 							formDataOptions.formData['%leftCode%']=that.options.leftCode;
 						}
 						
-						let submitData = await hcDataTransUtils.transFormData(formDataOptions); 
-						let code = await hcServer.postDtmplEntity({
+						let submitData = await dataTransUtils.transFormData(formDataOptions); 
+						let code = await server.postDtmplEntity({
 							formData: submitData,
 							...that.options,
 						});
@@ -430,9 +430,9 @@
 				// 	title: entityCode+'-'+fieldGroupId,
 				// 	icon: 'none'
 				// })
-				//let dtmplConfigKey = await hcServer.requestGroupDtmplConfig_menu(this.menuId, fieldGroupId);
+				//let dtmplConfigKey = await server.requestGroupDtmplConfig_menu(this.menuId, fieldGroupId);
 				uni.navigateTo({
-					url: `../detail/detail?type=${hcServer.getGroupType(this.options.type)}&entityCode=${entityCode}&menuId=${this.options.menuId}&fieldGroupId=${fieldGroupId}&ratmplId=${this.options.ratmplId}&leafCode=${this.options.leafCode}`,
+					url: `../detail/detail?type=${server.getGroupType(this.options.type)}&entityCode=${entityCode}&menuId=${this.options.menuId}&fieldGroupId=${fieldGroupId}&ratmplId=${this.options.ratmplId}&leafCode=${this.options.leafCode}`,
 				})
 			},
 			clickToGroupDelete(entityCode, fieldGroupId) {
@@ -443,7 +443,7 @@
 			async deleteConfirm() {
 				this.$refs.deleteAlertDialog.close();
 
-				hcDataTransUtils.deleteGroupEntityFromDetailEnity({
+				dataTransUtils.deleteGroupEntityFromDetailEnity({
 					entityCode: this.deletingEntityCode,
 					fieldGroupId_ref: this.deletingRelatedGroupId,
 					detailEntity: this.detailEntity,
@@ -462,7 +462,7 @@
 					exceptCodes = exceptCodes + ex.code + ",";
 				}
 				let url =
-					`../checkList/checkList?type=${hcServer.getGroupStmplType(this.options.type)}&menuId=${this.menuId}&fieldGroupId=${fieldGroupId}&exceptCodes=${exceptCodes}&maxDataCount=${maxDataCount}`;
+					`../checkList/checkList?type=${server.getGroupStmplType(this.options.type)}&menuId=${this.menuId}&fieldGroupId=${fieldGroupId}&exceptCodes=${exceptCodes}&maxDataCount=${maxDataCount}`;
 				uni.navigateTo({
 					url,
 				})
@@ -471,7 +471,7 @@
 				let url;
 				//if (entityCode) { //编辑或添加
 				url =
-					`../edit/edit?type=${hcServer.getGroupType(this.options.type)}&entityCode=${entityCode}&menuId=${this.options.menuId}&fieldGroupId=${fieldGroupId}&ratmplId=${this.options.ratmplId}&leafCode=${this.options.leafCode}`;
+					`../edit/edit?type=${server.getGroupType(this.options.type)}&entityCode=${entityCode}&menuId=${this.options.menuId}&fieldGroupId=${fieldGroupId}&ratmplId=${this.options.ratmplId}&leafCode=${this.options.leafCode}`;
 				//}
 				uni.navigateTo({
 					url,
@@ -488,14 +488,14 @@
 				})
 			},
 			async selectFile(item) {
-				await hcDataTransUtils.selectFile(item,this);
+				await dataTransUtils.selectFile(item,this);
 			},
 			async takePhoto(item) {// tempFilePaths文件路径 type 0:图片 1:视频
 				console.log("tempFilePaths:",item);
-				await hcDataTransUtils.selectFile(item,this);
+				await dataTransUtils.selectFile(item,this);
 			},
 			async deleteFile(item) {
-				await hcDataTransUtils.deleteFile(item,this);
+				await dataTransUtils.deleteFile(item,this);
 			}
 		},
 	}

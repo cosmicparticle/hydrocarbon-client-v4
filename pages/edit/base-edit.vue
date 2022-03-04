@@ -99,7 +99,7 @@
 </template>
 
 <script>
-	import hcDataTransUtils from '@/components/hcServer/hcDataTransUtils.vue';
+	import dataTransUtils from '@/components/server/data-trans-utils.vue';
 	export default {
 		data() {
 			return {
@@ -114,9 +114,9 @@
 			uni.showLoading({
 				title: "数据加载中..."
 			});
-			let options = hcDataTransUtils.setUndefinedStrValueToNull(options_);
+			let options = dataTransUtils.setUndefinedStrValueToNull(options_);
 			console.log("edit onLoad options", options);
-			let code_ = options.entityCode_ref ? options.entityCode_ref : hcDataTransUtils.guid();
+			let code_ = options.entityCode_ref ? options.entityCode_ref : dataTransUtils.guid();
 			//获取baseentity
 			let datail_entity = null,
 				base_entity = null;
@@ -138,7 +138,7 @@
 					}
 				}
 			} else {
-				base_entity = await hcDataTransUtils.getEmptyBaseEnityOfGroup(options);
+				base_entity = await dataTransUtils.getEmptyBaseEnityOfGroup(options);
 			}
 			let form_data = {};
 			let rule_ = {}
@@ -191,10 +191,10 @@
 					})
 			}, 
 			async selectFile(item) {
-				await hcDataTransUtils.selectFile(item, this);
+				await dataTransUtils.selectFile(item, this);
 			},
 			async deleteFile(item) {
-				await hcDataTransUtils.deleteFile(item, this);
+				await dataTransUtils.deleteFile(item, this);
 			}
 		}
 	}

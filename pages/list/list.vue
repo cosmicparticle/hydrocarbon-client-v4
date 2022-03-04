@@ -75,8 +75,8 @@
 </template>
 
 <script>
-	import hcServer from '@/components/hcServer/hcServerV2.vue';
-	import hcDataTransUtils from '@/components/hcServer/hcDataTransUtils.vue';
+	import server from '@/components/server/server-v3.vue';
+	import dataTransUtils from '@/components/server/data-trans-utils.vue';
 	export default {
 		data() {
 			return {
@@ -104,8 +104,8 @@
 		async onLoad(options) {
 			console.log("list onLoad options",options);
 			this.menuId = options.menuId;
-			let ltmpl_config = await hcServer.getLtmplConfig(options);
-			let query_key = await hcServer.getLtmplQueryKey({
+			let ltmpl_config = await server.getLtmplConfig(options);
+			let query_key = await server.getLtmplQueryKey({
 				...options,
 				condition: this.condition,
 			});
@@ -157,7 +157,7 @@
 					data_list.push(dataItem);
 					dataItem.code = item.code;
 					ltmplConfig.config.ltmpl.columns.forEach((col, index) => {
-						let value = hcDataTransUtils.getDetailValue(item[col.id],col.viewOption);
+						let value = dataTransUtils.getDetailValue(item[col.id],col.viewOption);
 						if (col && col.title != '操作' && col.title != '序号') {
 							dataItem.items.push({
 								title: col.title,
@@ -213,7 +213,7 @@
 				if (pageInfo) {
 					statePageInfo = pageInfo
 				}
-				let res = await hcServer.requestQueryEntities(queryKey, statePageInfo);
+				let res = await server.requestQueryEntities(queryKey, statePageInfo);
 				const dataSource = []
 				res.entities.forEach((item, index) => {
 					item.fieldMap.key = index
@@ -247,7 +247,7 @@
 						//console.log("点击了", that.operates.actions[e.tapIndex]);
 						//先从action里面找 找不到再从raction里面找
 						if(e.tapIndex<that.operates.actions.length){
-							let result = await hcServer.postActions({
+							let result = await server.postActions({
 								...that.options,
 								selectCodes: that.actioningEntityCode,
 								actionId: that.operates.actions[e.tapIndex].id,
@@ -299,7 +299,7 @@
 				});
 				console.log("reload:", this.options);
 				this.pageInfo.pageNo = 1;
-				let query_key = await hcServer.getLtmplQueryKey({
+				let query_key = await server.getLtmplQueryKey({
 				...this.options,
 				condition: this.condition,
 			});
@@ -341,11 +341,11 @@
 				this.deletingEntityCode = null;
 			},
 			async doDelete(entityCode) {
-				let status = await hcServer.deleteEntities({
+				let status = await server.deleteEntities({
 					...this.options,codes:entityCode
 				});
 				if (status == 'suc') {
-					let query_key = await hcServer.getLtmplQueryKey(this.options);
+					let query_key = await server.getLtmplQueryKey(this.options);
 					this.initData(null, query_key);
 					this.queryKey = query_key;
 					this.totalCount = null;
@@ -365,13 +365,13 @@
 					icon: 'none'
 				})
 				let menuId = this.menuId;
-				let dtmplConfigKey = await hcServer.requestDtmplConfig_menu(menuId);
+				let dtmplConfigKey = await server.requestDtmplConfig_menu(menuId);
 				uni.navigateTo({
 					url: `../editTest/editTest?entityCode=${options}&dtmplConfigKey=${dtmplConfigKey}`,
 				})
 			},
 			async clickShowMore() {
-				this.totalCount = await hcServer.requestTotalCount(this.queryKey.queryKey);
+				this.totalCount = await server.requestTotalCount(this.queryKey.queryKey);
 			},
 			async changePage(options) {
 				//let toPageNo;

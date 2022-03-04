@@ -5,18 +5,18 @@
 </template>
 
 <script>
-	import hcServer from '@/components/hcServer/hcServerV2.vue';
+	import server from '@/components/server/server-v3.vue';
 	export default {
-		name: "hcDataTransUtils",
+		name: "dataTransUtils",
 		data() {
 			return {
 
 			};
 		},
 		async getUserDetailEnity() { //当前用户信息
-			let dtmplConfigKey = await hcServer.getUserDtmplConfig();
+			let dtmplConfigKey = await server.getUserDtmplConfig();
 			let dtmplConfig_cs = uni.getStorageSync(dtmplConfigKey);
-			let entity_ds = await hcServer.getUserDtmplEntity(); 
+			let entity_ds = await server.getUserDtmplEntity(); 
 			return await this.buildDetailEntity(dtmplConfig_cs, entity_ds);
 		},
 		async getDetailEnity(options) {
@@ -28,7 +28,7 @@
 			// if(options.type=='user'){
 			// 	return await this.getUserDetailEnity();
 			// }else{
-				let dtmplConfigKey = await hcServer.getDtmplConfig(options);
+				let dtmplConfigKey = await server.getDtmplConfig(options);
 				let leftCode = options.leftCode;
 				let entityCode = options.entityCode;
 				let versionId = options.versionId;
@@ -38,7 +38,7 @@
 				
 				let entity_ds;
 				if (entityCode) {
-					entity_ds = await hcServer.getDtmplEntity(dtmplConfigKey, leftCode, entityCode, versionId);
+					entity_ds = await server.getDtmplEntity(dtmplConfigKey, leftCode, entityCode, versionId);
 				} else {
 					entity_ds = {
 						arrayMap: {},
@@ -157,7 +157,7 @@
 			return detail_entity;
 		},
 		async getEmptyBaseEnityOfGroup(options) {
-			let dtmplConfigKey = await hcServer.getDtmplConfig(options);
+			let dtmplConfigKey = await server.getDtmplConfig(options);
 			let dtmplConfig_cs = uni.getStorageSync(dtmplConfigKey);
 			let optionsMap = await this.getOptionsMap(dtmplConfig_cs);
 			let fieldGroupId = options.fieldGroupId_ref;
@@ -178,7 +178,7 @@
 			return base_entity;
 		},
 		async unshiftGroupEntity2DetailEnity(options) {
-			let dtmplConfigKey = await hcServer.getDtmplConfig(options);
+			let dtmplConfigKey = await server.getDtmplConfig(options);
 			let dtmplConfig_cs = uni.getStorageSync(dtmplConfigKey);
 			console.log("dtmplConfig_cs", dtmplConfig_cs);
 			let optionsMap = await this.getOptionsMap(dtmplConfig_cs);
@@ -230,7 +230,7 @@
 			}
 		},
 		async refreshGroupEntity2DetailEnity(options) {
-			let dtmplConfigKey = await hcServer.getDtmplConfig(options);
+			let dtmplConfigKey = await server.getDtmplConfig(options);
 			let dtmplConfig_cs = uni.getStorageSync(dtmplConfigKey);
 			let optionsMap = await this.getOptionsMap(dtmplConfig_cs);
 			console.log("dtmplConfig_cs", dtmplConfig_cs);
@@ -460,7 +460,7 @@
 				})
 			})
 			if (requestSelectArr.length > 0) {
-				optionsMap = await hcServer.getSelect(requestSelectArr);
+				optionsMap = await server.getSelect(requestSelectArr);
 			}
 			return optionsMap;
 		},
@@ -485,7 +485,7 @@
 					value = {
 						name: value.base.fileName,
 						extname: value.base.type,
-						url: uni.getStorageSync("serverUrl") + "v2/files/" + value.base.path +
+						url: uni.getStorageSync("serverUrl") + "v3/files/" + value.base.path +
 							`?@token=${uni.getStorageSync("hydrocarbon-token")}`,
 					}
 				} else if (!value.name) {
@@ -518,7 +518,7 @@
 				title: "文件上传中..."
 			});
 
-			let res = await hcServer.uploadFile(file.path);
+			let res = await server.uploadFile(file.path);
 			console.log('uploadFile res', res);
 			if (res.status == 'suc') {
 				page.formData[item.id] = {

@@ -39,7 +39,7 @@
 </template>
 
 <script>
-	import hcServer from '@/components/hcServer/hcServerV2.vue';
+	import server from '@/components/server/server-v3.vue';
 	export default {
 		data() {
 			return {
@@ -52,11 +52,11 @@
 			}
 		},
 		async onLoad(options_) {
-			this.pubkey = await hcServer.getRasPubkey();
+			this.pubkey = await server.getRasPubkey();
 		},
 		methods: {
 			async getKaptchaToken() {
-				let res = await hcServer.getKaptchaToken();
+				let res = await server.getKaptchaToken();
 				if (res) {
 					this.kaptchaImg = `data:image/png;base64,${res.img.replace(/[\r\n]/g, "")}`;
 					this.kaptchaToken = res.kaptchaToken;
@@ -69,7 +69,7 @@
 				var password = e.detail.value.password;
 				var kaptchaText = e.detail.value.kaptchaText;
 				me.submitLoading = true;
-				var data = await hcServer.login(
+				var data = await server.login(
 					username, password, this.kaptchaToken, kaptchaText, this.pubkey
 				);
 				if (data.status == "suc") {

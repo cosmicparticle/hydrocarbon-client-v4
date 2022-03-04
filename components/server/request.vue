@@ -11,7 +11,7 @@
 			var serverUrl = uni.getStorageSync("serverUrl");
 			return new Promise((resolve, reject) => {
 				uni.uploadFile({
-					url: serverUrl + 'v2/upload', 
+					url: this.joinPath(serverUrl , 'v3/upload'), 
 					filePath,
 					sslVerify:false,
 					name: 'file',
@@ -62,10 +62,10 @@
 			return new Promise((resolve, reject) => {
 				uni.request({
 					sslVerify:false,
-					url: serverUrl + options.url,
+					url: this.joinPath(serverUrl , options.url),
 					header: {
 						"content-type": options.contentType ? options.contentType :
-							"application/x-www-form-urlencoded",
+						"application/x-www-form-urlencoded",
 						"hydrocarbon-token": uni.getStorageSync("hydrocarbon-token"),
 						"hydrocarbon-client": "MOBILE",
 					},
@@ -123,8 +123,21 @@
 					}
 				})
 			})
-		}
+		},
+		joinPath:function(path1,path2){
+		        let path=path1;
+		        if(!path.endsWith('/') && !path.endsWith('\\')){
+		            path=path+"/";
+		        }
+		        if(path2.startsWith('/') || path.startsWith('\\')){
+		            path=path+path2.slice(1);
+		        }else{
+		            path=path+path2;
+		        }
+		        return path;
+		    }
 	}
+	
 </script>
 
 <style>
