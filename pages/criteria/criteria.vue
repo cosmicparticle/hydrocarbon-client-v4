@@ -21,26 +21,22 @@
 					</uni-forms-item>
 					<uni-forms-item v-else-if="item.optionView=='datetimerange'" :name="item.id" :label="item.title">
 						<uni-datetime-picker class='uni-datetime-picker' type="datetimerange"
-							v-model="formData[item.id]" :disabled="item.readOnly" start="2000-06-01 06:30:30"
+							v-model="formData[item.id]" rangeSeparator='~' :disabled="item.readOnly" start="2000-06-01 06:30:30"
 							end="2030-6-1" return-type="string">
 						</uni-datetime-picker>
 					</uni-forms-item>
 					<uni-forms-item v-else-if="item.optionView=='datetime'" :name="item.id" :label="item.title">
-						<uni-datetime-picker class='uni-datetime-picker' type="date" v-model="formData[item.id]"
-							:disabled="item.readOnly" start="2000-06-01 06:30:30" end="2030-6-1" return-type="string">
+						<uni-datetime-picker class='uni-datetime-picker' rangeSeparator='~' type="date" v-model="formData[item.id]"
+							:disabled="item.readOnly" start="2000-06-01" end="2030-6-1" return-type="string" >
 						</uni-datetime-picker>
 					</uni-forms-item>
 					<uni-forms-item v-else-if="item.optionView=='select'" :name="item.id" :label="item.title">
-						<!-- <uni-data-picker :localdata="array" popup-title="请选择班级" @change="onchange" v-model="formData[item.id]"
-						@nodeclick="onnodeclick"></uni-data-picker> -->
 						<uni-data-checkbox v-model="formData[item.id]"  mode="tag" :localdata="item.optionValue"
 							:disabled="item.readOnly">
 						</uni-data-checkbox>
-						<button class="button" size='mini' type="warn" @click="unSelectAnyValue(item.id)">取消选择</button>
+						<button class="button" size='mini' type="warn" @click="unSelectAnyValue(item.id)">取消</button>
 					</uni-forms-item>
 					<uni-forms-item v-else-if="item.optionView=='multiselect'" :name="item.id" :label="item.title">
-						<!-- <uni-data-picker :localdata="array" popup-title="请选择班级" @change="onchange"
-						v-model="formData[item.id]" @nodeclick="onnodeclick"></uni-data-picker> -->
 						<uni-data-checkbox :multiple="true" v-model="formData[item.id]" mode="tag"
 							:disabled="item.readOnly" :localdata="item.optionValue">
 						</uni-data-checkbox>
@@ -75,7 +71,7 @@
 				<uni-row class="demo-uni-row">
 					<uni-col :span="12">
 						<view @click="submitForm('form')">
-							<button  class="button">确 定</button>
+							<button type="primary" plain="true" class="button">确 定</button>
 						</view>
 					</uni-col>
 					<uni-col :span="12">
@@ -86,7 +82,7 @@
 				</uni-row>
 			</view>
 		</uni-forms>
-		<Empty v-else></Empty>
+		<empty v-else></empty>
 	</view>
 </template>
 
@@ -116,11 +112,10 @@
 		},
 		async onLoad(options) {
 			console.log("来自criteria", options);
-			let config = uni.getStorageSync(options.key);
+			let config = await server.requestLtmplConfig(options.sourceName,options.sourceId);
 			//加入枚举
-			let selectMSFieldIdMap = await server.getSelect(config.config.selectMSFieldIdArray);
-			let criterias = config.config.ltmpl.criterias;
-			this.criteriaItems = dataTransUtils.buildCriteriaItems(criterias, options, selectMSFieldIdMap);
+			let criterias = config.ltmpl.criterias;
+			this.criteriaItems = dataTransUtils.buildCriteriaItems(criterias, options);
 			console.log("来自criteria,criteriaItems", this.criteriaItems);
 			this.formData = dataTransUtils.buildCriteriaFormData(this.criteriaItems);
 			this.options = options;

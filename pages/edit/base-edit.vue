@@ -114,9 +114,9 @@
 			uni.showLoading({
 				title: "数据加载中..."
 			});
-			let options = dataTransUtils.setUndefinedStrValueToNull(options_);
+			let options = hcDataTransUtils.setUndefinedStrValueToNull(options_);
 			console.log("edit onLoad options", options);
-			let code_ = options.entityCode_ref ? options.entityCode_ref : dataTransUtils.guid();
+			let code_ = options.entityCode_ref ? options.entityCode_ref : hcDataTransUtils.guid();
 			//获取baseentity
 			let datail_entity = null,
 				base_entity = null;
@@ -138,17 +138,12 @@
 					}
 				}
 			} else {
-				base_entity = await dataTransUtils.getEmptyBaseEnityOfGroup(options);
+				base_entity = await hcDataTransUtils.getEmptyBaseEnityOfGroup(options);
 			}
 			let form_data = {};
 			let rule_ = {}
 			for (const item of base_entity.items) {
 				if (item.value) {
-					// if(item.optionView=='multiselect'){//处理多选枚举的值
-					// 	form_data[item.id] = item.value.split(",");
-					// }else{
-					// 	form_data[item.id] = item.value;
-					// }
 					form_data[item.id] = item.value;
 				}
 				if (item.validators && item.validators.indexOf('required') >= 0) {
@@ -191,10 +186,10 @@
 					})
 			}, 
 			async selectFile(item) {
-				await dataTransUtils.selectFile(item, this);
+				await hcDataTransUtils.selectFile(item, this);
 			},
 			async deleteFile(item) {
-				await dataTransUtils.deleteFile(item, this);
+				await hcDataTransUtils.deleteFile(item, this);
 			}
 		}
 	}

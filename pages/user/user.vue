@@ -6,7 +6,7 @@
 				</uni-section>
 				<view v-for="(list,index3) in group.lists">
 					<uni-card isShadow>
-						<ItemListView :dataItem="list"></ItemListView>
+						<item-list-view :dataItem="list" />
 						<!-- <view v-if="group.detailable">
 							<view>
 								<button @click.stop="clickToGroupDetail(list.code,group.id)">

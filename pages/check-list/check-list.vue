@@ -5,18 +5,18 @@
 				<uni-card v-for="(items,index1) in dataList" :key="items.code" isShadow>
 					<checkbox :value="items.code" :checked="items.checked" />
 					<text>{{(pageInfo.pageSize * (pageInfo.pageNo-1))+index1+1}}</text>
-					<ItemListView :dataItem="items"></ItemListView>
+					<item-list-view :dataItem="items"></item-list-view>
 				</uni-card>
 			</checkbox-group>
 			<radio-group v-else @change="radioChange">
 				<uni-card v-for="(items,index1) in dataList" :key="items.code" isShadow>
 					<radio :value="items.code" :checked="items.checked" />
 					<text>{{(pageInfo.pageSize * (pageInfo.pageNo-1))+index1+1}}</text>
-					<ItemListView :dataItem="items"></ItemListView>
+					<item-list-view :dataItem="items"></item-list-view>
 				</uni-card>
 			</radio-group>
 		</view>
-		<Empty v-else></Empty>
+		<empty v-else></empty>
 		<view class='list-tabbar'>
 			<view v-if="totalCount==null">
 				<text style="line-height:30px;font-size: 14px;padding-left: 5px;" @click="clickShowMore">点击查看更多</text>
@@ -36,12 +36,16 @@
 			</view>
 			<uni-row class="demo-uni-row">
 				<uni-col :span="12">
+					<view class="button uni-padding-wrap ">
+						<view class="uni-btn-v">
 					<button class="button" @click.stop="clickToSelect">筛 选</button>
+					</view>
+					</view>
 				</uni-col>
 				<uni-col :span="12">
 					<view class="button uni-padding-wrap ">
 						<view class="uni-btn-v">
-							<button @click.stop="clickToSelected()">确 定</button>
+							<button type="primary" plain="true" @click.stop="clickToSelected()">确 定</button>
 						</view>
 					</view>
 				</uni-col>
@@ -58,7 +62,7 @@
 				buttonRect: {},
 				// menuId: "",
 				totalCount: null,
-				queryKey: {},
+				queryInfo: {},
 				dataList: {},
 				// colMap:{},
 				pageInfo: {
@@ -76,12 +80,12 @@
 		async onLoad(options) {
 			console.log("checkList参数:", options);
 			this.options = options;
-			let stmpl_config = await server.getStmplConfig(options);
+			let stmpl_config = await server.getStmplConfig(options.sourceName,options.sourceId);
 			console.log("checkList stmpl_config:", stmpl_config);
-			let query_key = await server.getGroupLtmplQueryKey({...options,condition:this.condition});
-			console.log("checkList query_key:", query_key);
-			await this.initData(stmpl_config, query_key.queryKey, this.pageInfo);
-			this.queryKey = query_key;
+			let query_info = await server.getLtmplQuery({...options,condition:this.condition});
+			console.log("checkList query_info:", query_info);
+			await this.initData(stmpl_config, query_info.queryKey, this.pageInfo);
+			this.queryInfo = query_info;
 			this.stmplConfig = stmpl_config;
 		},
 		async onShow() {
@@ -90,9 +94,9 @@
 			}
 			console.log("reload:", this.options);
 			this.pageInfo.pageNo = 1;
-			let query_key = await server.getGroupLtmplQueryKey({...this.options,condition:this.condition});
-			this.initData(this.stmplConfig, query_key.queryKey, this.pageInfo);
-			this.queryKey = query_key;
+			let query_info = await server.getLtmplQuery({...this.options,condition:this.condition});
+			this.initData(this.stmplConfig, query_info.queryKey, this.pageInfo);
+			this.queryInfo = query_info;
 			this.totalCount = null;
 			this.needReload = false;
 		},
@@ -109,7 +113,7 @@
 					data_list.push(dataItem);
 					dataItem.code = item.code;
 					dataItem.checked = false;
-					stmplConfig.config.ltmpl.columns.forEach((col, index) => {
+					stmplConfig.ltmpl.columns.forEach((col, index) => {
 						if (col && col.title != '操作' && col.title != '序号') {
 							dataItem.items.push({
 								title: col.title,
@@ -154,7 +158,7 @@
 					icon: 'none'
 				})
 				let menuId = this.menuId;
-				let dtmplConfigKey = await server.requestDtmplConfig_menu(menuId);
+				let dtmplConfigKey = await server.requestDtmplConfig(menuId);
 				uni.navigateTo({
 					url: `../editTest/editTest?entityCode=${options}&dtmplConfigKey=${dtmplConfigKey}`,
 				})

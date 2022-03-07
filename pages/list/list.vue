@@ -4,7 +4,8 @@
 			<view v-for="(items,index1) in dataList">
 				<uni-card isShadow>
 					<text>{{(pageInfo.pageSize * (pageInfo.pageNo-1))+index1+1}}</text>
-					<ItemListView :dataItem="items"></ItemListView>
+					<!-- < :dataItem="items"></item-list-view> -->
+					<item-list-view :dataItem="items" ></item-list-view>
 					<view class="list-footer-box">
 						<button v-if="operates.detailBtn" size="mini" @click.stop="clickToDetail(items.code)">
 							<text class="mini-button-iconfont">&#xe63b;</text>
@@ -24,7 +25,7 @@
 				</uni-card>
 			</view>
 		</view>
-		<Empty v-else></Empty>
+		<empty name='empty' v-else></empty>
 		<view class='list-tabbar'>
 			<view v-if="totalCount==null">
 				<text class="mini-button-iconfont">&#xe679;</text>
@@ -44,14 +45,16 @@
 			</uni-row>
 			<uni-row>
 				<uni-col :span="12">
-					<view class="button">
-						<button :disabled="!operates.queryBtn" @click.stop="clickToSelect()">筛 选</button>
+					<view class="button ">
+						<button type="primary" plain="true" :disabled="!operates.queryBtn" @click.stop="clickToSelect()">
+							<icon class="footer-box__item" type="search" size="20"/>
+							<text class="footer-box__item">筛 选</text></button>
 					</view>
 				</uni-col>
 				<uni-col :span="12">
-					<view class="button uni-padding-wrap ">
+					<view class="button ">
 						<view class="uni-btn-v">
-							<button :disabled="!operates.createBtn" @click.stop="clickToEdit()">添 加</button>
+							<button type="primary" plain="true" :disabled="!operates.createBtn" @click.stop="clickToEdit()">添 加</button>
 						</view>
 					</view>
 				</uni-col>
@@ -75,6 +78,7 @@
 </template>
 
 <script>
+	//import itemListView from '@/components/item-list-view/item-list-view.vue'
 	import server from '@/components/server/server-v3.vue';
 	import dataTransUtils from '@/components/server/data-trans-utils.vue';
 	export default {
@@ -83,10 +87,9 @@
 				popupMessageType: 'info',
 				popupMessageText: "默认消息",
 				buttonRect: {},
-				menuId: "",
 				deletingEntityCode: null,
 				totalCount: null,
-				queryKey: {},
+				queryInfo: {},
 				editedData:{},
 				ltmplConfig: {},
 				dataList: {},
@@ -103,16 +106,15 @@
 		// props:["menuId"],
 		async onLoad(options) {
 			console.log("list onLoad options",options);
-			this.menuId = options.menuId;
 			let ltmpl_config = await server.getLtmplConfig(options);
-			let query_key = await server.getLtmplQueryKey({
+			let query_info = await server.getLtmplQuery({
 				...options,
 				condition: this.condition,
 			});
 			console.log("ltmpl_config", ltmpl_config);
-			console.log("query_key", query_key);
-			await this.initData(ltmpl_config, query_key, this.pageInfo);
-			this.queryKey = query_key;
+			console.log("query_info", query_info);
+			await this.initData(ltmpl_config, query_info, this.pageInfo);
+			this.queryInfo = query_info;
 			this.ltmplConfig = ltmpl_config;
 			this.options = options;
 		},
@@ -127,17 +129,17 @@
 		},
 		methods: {
 			//用加载列表数据
-			async initData(ltmplConfig, queryKey, pageInfo) {
+			async initData(ltmplConfig, queryInfo, pageInfo) {
 				if (!ltmplConfig) {
 					ltmplConfig = this.ltmplConfig;
 				}
-				if (!queryKey) {
-					queryKey = this.queryKey;
+				if (!queryInfo) {
+					queryInfo = this.queryInfo;
 				}
 				if (!pageInfo) {
 					pageInfo = this.pageInfo;
 				}
-				let query_list = await this.queryList(queryKey.queryKey, pageInfo);
+				let query_list = await this.queryList(queryInfo.queryKey, pageInfo);
 				console.log(query_list);
 				let data_list = [];
 				//设置operates
@@ -156,52 +158,45 @@
 					};
 					data_list.push(dataItem);
 					dataItem.code = item.code;
-					ltmplConfig.config.ltmpl.columns.forEach((col, index) => {
-						let value = dataTransUtils.getDetailValue(item[col.id],col.viewOption);
+					ltmplConfig.ltmpl.columns.forEach((col, index) => {
+						let value = dataTransUtils.getDetailValue(item[col.id],col.controlType);
 						if (col && col.title != '操作' && col.title != '序号') {
 							dataItem.items.push({
 								title: col.title,
-								optionView: col.viewOption,
+								optionView: col.controlType,
 								value,
 							});
 						}
 					});
 				});
 
-				let tmplGroup_cs = ltmplConfig.config.tmplGroup;
-				if (tmplGroup_cs.hideDeleteButton == 1) {
+				const {buttons,actions,ractions}=ltmplConfig.ltmpl;
+				if (!buttons.includes('delete')) {
 					operates_.deleteBtn = false;
 				}
-				if (tmplGroup_cs.hideCreateButton == 1) {
+				if (!buttons.includes('dtmplAdd')) {
 					operates_.createBtn = false;
 				}
-				if (tmplGroup_cs.hideQueryButton == 1) {
+				if (!buttons.includes('query')) {
 					operates_.queryBtn = false;
 				}
-				for (let act of tmplGroup_cs.actions) {
-					if (act.face.indexOf("list") >= 0) {
+				if (buttons.includes("detail")) {
+					operates_.detailBtn = true;
+				} 
+				if (buttons.includes("dtmplEdit")) {
+					operates_.editBtn = true;
+				}
+				for (let act of actions) {
 						let action = {};
 						action.id = act.id;
 						action.title = act.title;
 						operates_.actions.push(action);
-					}
 				}
-				for (let ract of tmplGroup_cs.ractions) {
-					if (ract.face.indexOf("list") >= 0) {
+				for (let ract of ractions) {
 						let raction = {};
 						raction.id = ract.id;
 						raction.title = ract.title;
-						raction.ratmplId=ract.ratmplId;
 						operates_.ractions.push(raction);
-					}
-				}
-				let opt_cs = ltmplConfig.config.ltmpl.operates;
-				for (const opt of opt_cs) {
-					if (opt == "detail") {
-						operates_.detailBtn = true;
-					} else if (opt == "update") {
-						operates_.editBtn = true;
-					}
 				}
 				// this.colMap = col_map;
 				this.operates = operates_;
@@ -237,7 +232,7 @@
 				}
 				that.actioningEntityCode = entityCode;
 				uni.showActionSheet({
-					title: '操 作',
+					// title: '操 作',
 					itemList,
 					popover: {
 						top: that.buttonRect.top * 2 + that.buttonRect.height,
@@ -253,7 +248,7 @@
 								actionId: that.operates.actions[e.tapIndex].id,
 							});
 							
-							if(result.status=='suc'){
+							if(result.status=="success"){
 								this.popupMessageType = 'success'
 								this.popupMessageText = `执行成功！`
 							}else{
@@ -264,14 +259,14 @@
 							
 							await that.reLoad();
 						}else{ 
-							let ratmplId= that.operates.ractions[e.tapIndex-that.operates.actions.length].ratmplId;
+							let ratmplId= that.operates.ractions[e.tapIndex-that.operates.actions.length].id;
 							// uni.showToast({
 							// 	title: '点击了关系操作',
 							// 	icon: 'none'
 							// });
 							let menuId = this.menuId;
 							let url;
-							url = `../list/list?type=ratmpl&ratmplId=${ratmplId}&leftCode=${that.actioningEntityCode}`;
+							url = `../list/list?sourceName=ratmpl&sourceId=${ratmplId}&leftCode=${that.actioningEntityCode}`;
 							uni.navigateTo({
 								url,
 							})
@@ -284,12 +279,6 @@
 					},
 					complete: async () => {
 						that.actioningEntityCode = null;
-
-
-						// uni.showToast({
-						// 	title: "重置了"+that.actioningEntityCode,
-						// 	icon: "none"
-						// })
 					}
 				})
 			},
@@ -299,12 +288,12 @@
 				});
 				console.log("reload:", this.options);
 				this.pageInfo.pageNo = 1;
-				let query_key = await server.getLtmplQueryKey({
+				let query_info = await server.getLtmplQuery({
 				...this.options,
 				condition: this.condition,
 			});
-				this.initData(this.ltmplConfig, query_key, this.pageInfo);
-				this.queryKey = query_key;
+				this.initData(this.ltmplConfig, query_info, this.pageInfo);
+				this.queryInfo = query_info;
 				this.totalCount = null;
 				uni.hideLoading();
 			},
@@ -315,14 +304,14 @@
 				// })
 				let menuId = this.menuId;
 				uni.navigateTo({
-					url: `../detail/detail??type=${this.options.type}&entityCode=${entityCode}&menuId=${this.options.menuId}&ratmplId=${this.options.ratmplId}&leftCode=${this.options.leftCode}`,
+					url: `../detail/detail?sourceName=${this.options.sourceName}&entityCode=${entityCode}&sourceId=${this.options.sourceId}&leftCode=${this.options.leftCode}`,
 				})
 			},
 			async clickToEdit(entityCode) {
 				let menuId = this.menuId;
 				let url;
 				//if (entityCode) { //编辑 或 添加
-				url = `../edit/edit?type=${this.options.type}&entityCode=${entityCode}&menuId=${this.options.menuId}&ratmplId=${this.options.ratmplId}&leftCode=${this.options.leftCode}`;
+				url = `../edit/edit?sourceName=${this.options.sourceName}&entityCode=${entityCode}&sourceId=${this.options.sourceId}&leftCode=${this.options.leftCode}`;
 				uni.navigateTo({
 					url,
 				})
@@ -344,12 +333,11 @@
 				let status = await server.deleteEntities({
 					...this.options,codes:entityCode
 				});
-				if (status == 'suc') {
-					let query_key = await server.getLtmplQueryKey(this.options);
-					this.initData(null, query_key);
-					this.queryKey = query_key;
+				if (status == "success") {
+					let query_info = await server.getLtmplQuery(this.options);
+					this.initData(null, query_info);
+					this.queryInfo = query_info;
 					this.totalCount = null;
-
 					this.popupMessageType = 'success'
 					this.popupMessageText = `删除成功！`
 					this.$refs.message.open();
@@ -359,41 +347,23 @@
 					this.$refs.message.open()
 				}
 			},
-			async footerClick(options) {
-				uni.showToast({
-					title: options,
-					icon: 'none'
-				})
-				let menuId = this.menuId;
-				let dtmplConfigKey = await server.requestDtmplConfig_menu(menuId);
-				uni.navigateTo({
-					url: `../editTest/editTest?entityCode=${options}&dtmplConfigKey=${dtmplConfigKey}`,
-				})
-			},
 			async clickShowMore() {
-				this.totalCount = await server.requestTotalCount(this.queryKey.queryKey);
+				this.totalCount = await server.requestTotalCount(this.queryInfo.queryKey);
 			},
 			async changePage(options) {
-				//let toPageNo;
-				// if(options.type=="prev"){
-				// 	toPageNo=options.current-1;
-				// }else{
-				// 	toPageNo=options.current+1;
-				// }
 				this.pageInfo.pageNo = options.current;
-				await this.initData(this.ltmplConfig, this.queryKey, this.pageInfo);
+				await this.initData(this.ltmplConfig, this.queryInfo, this.pageInfo);
 			},
 			clickToSelect() {
-				let url = `../criteria/criteria?key=${this.ltmplConfig.key}`;
-				let criteriaValueMap = this.queryKey.criteriaValueMap;
-				let criteriaStr = "";
+				let url = `../criteria/criteria?sourceName=${this.options.sourceName}&sourceId=${this.options.sourceId}`;
+				let criteriaValueMap = this.queryInfo.criteriaValueMap;
+				let criteriaStr = "&";
 				for (let key in criteriaValueMap) {
 					if (criteriaValueMap[key]) {
 						criteriaStr = criteriaStr + "&" + key + "=" + criteriaValueMap[key];
 					}
 				}
 				url = url + criteriaStr;
-
 				uni.navigateTo({
 					url,
 				})
@@ -404,8 +374,4 @@
 
 <style>
 	@import url("list.css");
-
-	
-
-	
 </style>

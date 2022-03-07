@@ -41,8 +41,8 @@
 				</uni-row>
 			</view>
 		</uni-card>
-		<!-- 日常工作 -->
-		<uni-card title='日常工作' isShadow>
+		<!-- 快捷入口 -->
+		<uni-card title='快捷入口' isShadow>
 			<view class="row-view">
 				<uni-row>
 					<view v-for="(item,index) in faceplateDaily">
@@ -135,7 +135,7 @@
 				}, 180000);
 				let count = await server.requestLtmplCount_menu(item.id);
 				item.count = count;
-				item.url = "../list/list?type=menu&menuId=" + item.id;
+				item.url = "../list/list?sourceName=menu&sourceId=" + item.id;
 			}
 			me.faceplateStatistic = faceplate_statistic;
 
@@ -143,16 +143,16 @@
 			let faceplate_daily = await server.requestFaceplate_menu();
 
 			for (const item of faceplate_daily) {
-				item.url = "../list/list?type=menu&menuId=" + item.id;
+				item.url = "../list/list?sourceName=menu&sourceId=" + item.id;
 			}
 			me.faceplateDaily = faceplate_daily;
 			//板块
 			let blocks_res = await server.requestBlocks();
-			if (blocks_res.status == "suc") {
+			if (blocks_res.status == "success") {
 				for (const block of blocks_res.blocks) {
 					for (const l1menu of block.l1Menus) {
 						for (const l2menu of l1menu.l2Menus) {
-							l2menu.url = "../list/list?type=menu&menuId=" + l2menu.id;
+							l2menu.url = "../list/list?sourceName=menu&sourceId=" + l2menu.id;
 						}
 					}
 				}

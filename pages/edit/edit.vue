@@ -24,11 +24,10 @@
 						</button>
 					</uni-section>
 					<uni-group v-for="(list,index3) in group.lists" mode='card' >
-						<ItemListView :dataItem="list"></ItemListView>
-						<view v-if="group.detailable">
+						<item-list-view :dataItem="list"></item-list-view>
 							<view class="list-footer-box">
 								<button v-if="group.operates.detailBtn" size="mini"
-									@click.stop="clickToGroupDetail(list.code,group.id)">
+									@click.stop="clickToGroupDetail(group.id,list.code)">
 									<text class="mini-button-iconfont">&#xe63b;</text>
 									<text class="footer-box__item">详情</text></button>
 								<button v-if="group.operates.editBtn" size="mini"
@@ -40,11 +39,10 @@
 									<text class="mini-button-iconfont">&#xe66f;</text>
 									<text class="footer-box__item">编辑</text></button>
 								<button v-if="group.operates.deleteBtn" size="mini"
-									@click.stop="clickToGroupDelete(list.code,group.id)">
+									@click.stop="clickToGroupDelete(group.id,list.code)">
 									<text class="mini-button-iconfont">&#xe666;</text>
 									<text class="footer-box__item">删除</text></button>
 							</view>
-						</view>
 					</uni-group>
 				</view>
 				<view v-else>
@@ -168,9 +166,6 @@
 			<view class='button-only-tabbar'>
 				<uni-row>
 					<uni-col :span="12">
-						<button :disabled="!detailEntity.operates.saveBtn" @click.stop="submitForm('form')">保 存</button>
-					</uni-col>
-					<uni-col :span="12">
 						<view class="button uni-padding-wrap ">
 							<view class="uni-btn-v">
 								<button
@@ -178,6 +173,13 @@
 									@tap="moreAction">更多操作</button>
 							</view>
 						</view>
+					</uni-col>
+					<uni-col :span="12">
+						<view class="button uni-padding-wrap ">
+							<view class="uni-btn-v">
+						<button type="primary" plain="true" :disabled="!detailEntity.operates.saveBtn" @click.stop="submitForm('form')">保 存</button>
+					</view>
+					</view>
 					</uni-col>
 				</uni-row>
 			</view>
@@ -325,7 +327,6 @@
 			//处理行内修改
 			if(this.currentBaseEditFormData){
 				console.log("baseEditFormData",this.currentBaseEditFormData);
-				
 				//追加显示
 				dataTransUtils.refreshGroupEntity2DetailEnity({
 					...this.options,
@@ -336,7 +337,6 @@
 				this.baseEditFormData.set(this.currentBaseEditFormData['唯一编码'],this.currentBaseEditFormData);
 				this.currentBaseEditFormData=null;
 			}
-			
 		},
 		methods: {
 			moreAction() {
@@ -346,7 +346,7 @@
 					itemList.push(action.title);
 				}
 				uni.showActionSheet({
-					title: '操 作',
+					// title: '操 作',
 					itemList,
 					popover: {
 						top: that.buttonRect.top * 2 + that.buttonRect.height,
@@ -387,7 +387,6 @@
 							setTimeout(function() {
 								let pages = getCurrentPages(); //获取所有页面栈实例列表
 								let prevPage = pages[pages.length - 2]; //上一页页面实例
-								//prevPage.$vm.options.condition = that.formData; //修改上一页data里面的tagIndex 参数值
 								prevPage.$vm.editedData = {
 									status: code ? true : false,
 									selectedCodes: [code],
@@ -425,24 +424,18 @@
 				console.log('picker发送选择改变，携带值为：' + e.detail.value)
 				this.index = e.detail.value
 			},
-			async clickToGroupDetail(entityCode, fieldGroupId) {
-				// uni.showToast({
-				// 	title: entityCode+'-'+fieldGroupId,
-				// 	icon: 'none'
-				// })
-				//let dtmplConfigKey = await server.requestGroupDtmplConfig_menu(this.menuId, fieldGroupId);
+			async clickToGroupDetail(fieldGroupId,entityCode) {
 				uni.navigateTo({
-					url: `../detail/detail?type=${server.getGroupType(this.options.type)}&entityCode=${entityCode}&menuId=${this.options.menuId}&fieldGroupId=${fieldGroupId}&ratmplId=${this.options.ratmplId}&leafCode=${this.options.leafCode}`,
+					url: `../detail/detail?sourceName=field-group&entityCode=${entityCode}&sourceId=${fieldGroupId}&leafCode=${this.options.leafCode}`,
 				})
 			},
-			clickToGroupDelete(entityCode, fieldGroupId) {
+			clickToGroupDelete(fieldGroupId,entityCode) {
 				this.deletingEntityCode = entityCode;
 				this.deletingRelatedGroupId = fieldGroupId;
 				this.$refs.deleteAlertDialog.open()
 			},
 			async deleteConfirm() {
 				this.$refs.deleteAlertDialog.close();
-
 				dataTransUtils.deleteGroupEntityFromDetailEnity({
 					entityCode: this.deletingEntityCode,
 					fieldGroupId_ref: this.deletingRelatedGroupId,
@@ -462,7 +455,7 @@
 					exceptCodes = exceptCodes + ex.code + ",";
 				}
 				let url =
-					`../checkList/checkList?type=${server.getGroupStmplType(this.options.type)}&menuId=${this.menuId}&fieldGroupId=${fieldGroupId}&exceptCodes=${exceptCodes}&maxDataCount=${maxDataCount}`;
+					`../check-list/check-list?sourceName=field-group&sourceId=${fieldGroupId}&exceptCodes=${exceptCodes}&maxDataCount=${maxDataCount}`;
 				uni.navigateTo({
 					url,
 				})
@@ -471,7 +464,7 @@
 				let url;
 				//if (entityCode) { //编辑或添加
 				url =
-					`../edit/edit?type=${server.getGroupType(this.options.type)}&entityCode=${entityCode}&menuId=${this.options.menuId}&fieldGroupId=${fieldGroupId}&ratmplId=${this.options.ratmplId}&leafCode=${this.options.leafCode}`;
+					`../edit/edit?sourceName=field-group&entityCode=${entityCode}&sourceId=${fieldGroupId}&leafCode=${this.options.leafCode}`;
 				//}
 				uni.navigateTo({
 					url,
@@ -481,8 +474,7 @@
 				let url;
 				//if (entityCode) { //编辑或添加
 				url =
-					`../edit/baseEdit?type=${this.options.type}&menuId=${this.options.menuId}&fieldGroupId=${this.options.fieldGroupId}&ratmplId=${this.options.ratmplId}&leafCode=${this.options.leafCode}&fieldGroupId_ref=${fieldGroupId}&entityCode_ref=${baseEntityCode}`;
-				//}
+					`../edit/baseEdit?sourceName=field-group&entityCode=${entityCode}&sourceId=${this.options.sourceId}&leafCode=${this.options.leafCode}`;
 				uni.navigateTo({
 					url,
 				})

@@ -6,6 +6,7 @@
 
 <script>
 	import server from '@/components/server/server-v3.vue';
+	import requset from '@/components/server/request.vue';
 	export default {
 		name: "dataTransUtils",
 		data() {
@@ -14,31 +15,21 @@
 			};
 		},
 		async getUserDetailEnity() { //当前用户信息
-			let dtmplConfigKey = await server.getUserDtmplConfig();
-			let dtmplConfig_cs = uni.getStorageSync(dtmplConfigKey);
+			let dtmplConfig_cs = await server.getUserDtmplConfig();
 			let entity_ds = await server.getUserDtmplEntity(); 
 			return await this.buildDetailEntity(dtmplConfig_cs, entity_ds);
 		},
 		async getDetailEnity(options) {
-			//console.log(options);
-			// uni.showToast({
-			// 	title: options.entityCode + "_" + options.dtmplConfigKey,
-			// 	icon: 'none'
-			// });
-			// if(options.type=='user'){
-			// 	return await this.getUserDetailEnity();
-			// }else{
-				let dtmplConfigKey = await server.getDtmplConfig(options);
+				let dtmplConfig_cs = await server.getDtmplConfig(options);
 				let leftCode = options.leftCode;
 				let entityCode = options.entityCode;
 				let versionId = options.versionId;
-				let dtmplConfig_cs = uni.getStorageSync(dtmplConfigKey);
 				
 				console.log("dtmplConfig_cs", dtmplConfig_cs);
 				
 				let entity_ds;
 				if (entityCode) {
-					entity_ds = await server.getDtmplEntity(dtmplConfigKey, leftCode, entityCode, versionId);
+					entity_ds = await server.requestDtmplData(dtmplConfig_cs.sourceName,dtmplConfig_cs.sourceId, entityCode, versionId);
 				} else {
 					entity_ds = {
 						arrayMap: {},
@@ -52,79 +43,52 @@
 			
 		},
 		async buildDetailEntity(dtmplConfig_cs, entity_ds) {
-			let optionsMap = await this.getOptionsMap(dtmplConfig_cs);
-			console.log("optionsMap:", optionsMap);
 			let detail_entity = {};
 			detail_entity.code = entity_ds.code;
-			detail_entity.menuId = dtmplConfig_cs.menuId;
+			detail_entity.menuId = dtmplConfig_cs.sourceId;
 			detail_entity.groups = [];
 			//设置整体操作
 			detail_entity.operates = {
-				saveBtn: dtmplConfig_cs.dtmpl.buttonStatus?dtmplConfig_cs.dtmpl.buttonStatus.saveButton:null,
+				saveBtn: dtmplConfig_cs.dtmpl.buttons.includes('dtmplSave'),
 				actions: [],
 			}
 			if(dtmplConfig_cs.dtmpl.actions){
 				for (const act of dtmplConfig_cs.dtmpl.actions) {
-					if (act.face.indexOf("detail") >= 0) {
 						let action = {};
 						action.id = act.id;
 						action.title = act.title;
 						detail_entity.operates.actions.push(action);
-					}
 				}
 			}
-			for (const group_cs of dtmplConfig_cs.dtmpl.dtmpl.groups) {
+			for (const group_cs of dtmplConfig_cs.dtmpl.groups) {
 				let entityGroup = {};
 				detail_entity.groups.push(entityGroup);
 				entityGroup.lists = [];
 				entityGroup.title = group_cs.title;
 
-				entityGroup.msTitle = group_cs.mStrucFieldGroup ? group_cs.mStrucFieldGroup.title : "";
+				//entityGroup.msTitle = group_cs.mStrucFieldGroup ? group_cs.mStrucFieldGroup.title : "";
 
-				entityGroup.isArray = group_cs.isArray && group_cs.isArray == 1 ? true : false;
-				entityGroup.detailable = entityGroup.isArray ? group_cs.rabcUndetailable && group_cs
-					.rabcUndetailable == 1 ? false : true : false;
+				entityGroup.isArray = group_cs.type=='relation';
+				entityGroup.detailable = group_cs.buttons.includes('detail');
 				entityGroup.id = group_cs.id;
 
 				if (entityGroup.isArray && entity_ds.arrayMap) {
 					let groupDatas_ds = entity_ds.arrayMap[group_cs.id];
 					entityGroup.relatedCodes = [];
-					let maxDataCount = group_cs.mStrucFieldGroup.maxDataCount;
-					entityGroup.maxDataCount = !maxDataCount || maxDataCount == 0 ? 100000 : maxDataCount;
+					let maxDataCount = group_cs.max;
+					entityGroup.maxDataCount = maxDataCount == 0 ? 100000 : maxDataCount;
 					//设置操作
+					let buttons=group_cs.buttons;
 					entityGroup.operates = {
-						deleteBtn: true,
-						selectBtn: false,
-						detailBtn: true,
-						editBtn: true,
-						createBtn: true,
-						createBtn_r: false,
-						editBtn_r: false,
+						deleteBtn: buttons.includes("delete"),
+						selectBtn: buttons.includes("selectAdd"),
+						detailBtn: buttons.includes("detail"),
+						editBtn: buttons.includes("rowEdit"),
+						createBtn: buttons.includes("rowAdd"),
+						createBtn_r: buttons.includes("dtmplAdd"),
+						editBtn_r: buttons.includes("dtmplEdit"),
 					}
-					//暂时用创建控制编辑
-					if (group_cs.unallowedCreate == 1) {
-						entityGroup.operates.createBtn = false;
-						entityGroup.operates.editBtn = false;
-					}
-					// if (group_cs.unmodifiable == 1) {
-					// 	entityGroup.operates.editBtn = false;
-					// }
-					if (group_cs.rabcTemplateGroupId && group_cs.rabcUncreatable != 1) {
-						entityGroup.operates.createBtn_r = true;
-						entityGroup.operates.createBtn = false;
-					}
-					if (group_cs.rabcTemplateGroupId && group_cs.rabcUnupdatable != 1) {
-						entityGroup.operates.editBtn_r = true;
-						entityGroup.operates.editBtn = false;
-					}
-					if (group_cs.unallowedDelete == 1) {
-						entityGroup.operates.deleteBtn = false;
-					}
-
-					if (group_cs.dialogSelectType) {
-						entityGroup.operates.selectBtn = true;
-					}
-
+				
 					if (!groupDatas_ds) {
 						continue;
 					}
@@ -134,14 +98,14 @@
 						entityGroup.lists.push(list);
 						list.code = groupData_ds.code;
 						list.relationLabel = groupData_ds.relationLabel;
-						list.relationSubdomain = group_cs.relationSubdomain;
+						list.relationSubdomain = group_cs.relationNames;
 						entityGroup.relatedCodes.push({
 							code: list.code,
 							relationLabel: list.relationLabel
 						});
 						list.items = [];
 						for (const field_cs of group_cs.fields) {
-							list.items.push(this.buildItem(field_cs, fieldMap_ds, optionsMap));
+							list.items.push(this.buildItem(field_cs, fieldMap_ds));
 						}
 					}
 				} else {
@@ -150,27 +114,24 @@
 					entityGroup.lists.push(list);
 					list.items = [];
 					for (const field_cs of group_cs.fields) {
-						list.items.push(this.buildItem(field_cs, fieldMap_ds, optionsMap));
+						list.items.push(this.buildItem(field_cs, fieldMap_ds));
 					}
 				}
 			}
 			return detail_entity;
 		},
 		async getEmptyBaseEnityOfGroup(options) {
-			let dtmplConfigKey = await server.getDtmplConfig(options);
-			let dtmplConfig_cs = uni.getStorageSync(dtmplConfigKey);
-			let optionsMap = await this.getOptionsMap(dtmplConfig_cs);
+			let dtmplConfig_cs = await server.getDtmplConfig(options);
 			let fieldGroupId = options.fieldGroupId_ref;
 			console.log("dtmplConfig_cs", dtmplConfig_cs);
-			console.log("optionsMap:", optionsMap);
 			let base_entity = {};
-			for (const group_cs of dtmplConfig_cs.dtmpl.dtmpl.groups) {
+			for (const group_cs of dtmplConfig_cs.dtmpl.groups) {
 				if (group_cs.id == fieldGroupId) {
 					base_entity.title = group_cs.title;
-					base_entity.relationSubdomain = group_cs.relationSubdomain;
+					base_entity.relationSubdomain = group_cs.relationNames;
 					base_entity.items = [];
 					for (const field_cs of group_cs.fields) {
-						base_entity.items.push(this.buildItem(field_cs, {}, optionsMap));
+						base_entity.items.push(this.buildItem(field_cs, {}));
 					}
 					break;
 				}
@@ -178,10 +139,8 @@
 			return base_entity;
 		},
 		async unshiftGroupEntity2DetailEnity(options) {
-			let dtmplConfigKey = await server.getDtmplConfig(options);
-			let dtmplConfig_cs = uni.getStorageSync(dtmplConfigKey);
+			let dtmplConfig_cs = await server.getDtmplConfig(options);
 			console.log("dtmplConfig_cs", dtmplConfig_cs);
-			let optionsMap = await this.getOptionsMap(dtmplConfig_cs);
 			let unshiftEntitys = options.editedEntitys;
 			let fieldGroupId_ref = options.fieldGroupId_ref;
 			let detailEntity = options.detailEntity;
@@ -224,15 +183,13 @@
 					});
 					list.items = [];
 					for (const field_cs of neededGroup_cs.fields) {
-						list.items.push(this.buildItem(field_cs, fieldMap_ds, optionsMap));
+						list.items.push(this.buildItem(field_cs, fieldMap_ds));
 					}
 				}
 			}
 		},
 		async refreshGroupEntity2DetailEnity(options) {
-			let dtmplConfigKey = await server.getDtmplConfig(options);
-			let dtmplConfig_cs = uni.getStorageSync(dtmplConfigKey);
-			let optionsMap = await this.getOptionsMap(dtmplConfig_cs);
+			let dtmplConfig_cs = await server.getDtmplConfig(options);
 			console.log("dtmplConfig_cs", dtmplConfig_cs);
 			let editedEntitys = options.editedEntitys;
 			console.log("editedEntitys", editedEntitys);
@@ -240,7 +197,7 @@
 			let detailEntity = options.detailEntity;
 			//先找到对应的group
 			let neededGroup_cs;
-			for (const group of dtmplConfig_cs.dtmpl.dtmpl.groups) {
+			for (const group of dtmplConfig_cs.dtmpl.groups) {
 				if (group.id == fieldGroupId_ref) {
 					neededGroup_cs = group;
 					break;
@@ -289,12 +246,12 @@
 						needGroup_de.lists.unshift(list);
 						needGroup_de.relatedCodes.unshift({ //暂时只能支持一组一个关系类型
 							code: list.code,
-							relationLabel: neededGroup_cs.mStrucFieldGroup.relationTypeNames[0],
+							relationLabel: neededGroup_cs.relationNames[0],
 						});
 					}
 					list.items = [];
 					for (const field_cs of neededGroup_cs.fields) {
-						list.items.push(this.buildItem(field_cs, fieldMap_ds, optionsMap));
+						list.items.push(this.buildItem(field_cs, fieldMap_ds));
 					}
 				}
 			}
@@ -337,8 +294,6 @@
 			}
 		},
 		transFormData(options) {
-			//let dtmplConfig_cs = uni.getStorageSync(options.dtmplConfigKey);
-			//let fieldGroupId = options.fieldGroupId;
 			let detailEntity = options.detailEntity;
 			let formData = options.formData;
 			let baseEditFormData = options.baseEditFormData;
@@ -361,22 +316,22 @@
 								//处理文件
 								if (formData[item.id].fileValue && formData[item.id].fileValue.indexOf('$blob:') >=
 									0) {
-									commitFormData[item.title] = formData[item.id].fileValue;
+									commitFormData[item.id] = formData[item.id].fileValue;
 								} else {
-									commitFormData[item.title] = formData[item.id];
+									commitFormData[item.id] = formData[item.id];
 								}
 
 							}
 						}
 					}
 				} else {
-					commitFormData[group.msTitle + '.$$flag$$'] = true;
+					commitFormData[group.id + '.$$flag$$'] = true;
 					let editFormData_ = null;
 					for (let index in group.relatedCodes) {
 						let relatedCode = group.relatedCodes[index];
-						commitFormData[`${group.msTitle}[${index}].$$relation$$`] = relatedCode.relationLabel;
+						commitFormData[`${group.id}[${index}].$$relation$$`] = relatedCode.relationLabel;
 						if (relatedCode.code.indexOf('-new') < 0) {
-							commitFormData[`${group.msTitle}[${index}].唯一编码`] = relatedCode.code;
+							commitFormData[`${group.id}[${index}].唯一编码`] = relatedCode.code;
 						}
 						//追加baseEditFormData
 						if (baseEditFormData.has(relatedCode.code)) {
@@ -386,11 +341,11 @@
 									//处理文件
 									if (editFormData_[item1.id].fileValue && editFormData_[item1.id].fileValue.indexOf(
 											'$blob:') >= 0) {
-										commitFormData[`${group.msTitle}[${index}].${item1.title}`] = editFormData_[item1
+										commitFormData[`${group.id}[${index}].${item1.id}`] = editFormData_[item1
 												.id]
 											.fileValue;
 									} else {
-										commitFormData[`${group.msTitle}[${index}].${item1.title}`] = editFormData_[item1
+										commitFormData[`${group.id}[${index}].${item1.id}`] = editFormData_[item1
 											.id];
 									}
 								}
@@ -402,67 +357,45 @@
 			}
 			return commitFormData;
 		},
-		buildItem(field_cs, fieldMap_ds, optionsMap) {
-			return this.buildItem_value(field_cs, fieldMap_ds[field_cs.id], optionsMap ? optionsMap[field_cs
-				.mStrucFieldId] : null);
+		buildItem(field_cs, fieldMap_ds) {
+			return this.buildItem_value(field_cs, fieldMap_ds[field_cs.id], server.getEnum(field_cs.mstrucId));
 		},
 		buildItem_value(field_cs, value, optionValue) {
 			let item = {};
 			//const validators = field_cs.validators ? field_cs.validators.split(';') : [];
 			item.id = field_cs.id;
 			item.title = field_cs.title;
-			item.readOnly = (field_cs.access == '读') ? true : false;
-			item.required = (field_cs.required=='1')? true : false;
-			item.available = field_cs.fieldAvailable;
-			item.optionView = field_cs.type;
+			item.readOnly = field_cs.disabled;
+			item.required = field_cs.required;
+			item.available = !field_cs.disabled;
+			item.optionView = field_cs.extControlType;
 			item.instruction=field_cs.instruction;
-			item.value = this.getDetailValue(value?value:field_cs.defaultValue, field_cs.type);
+			item.value = this.getDetailValue(value?value:field_cs.defaultValue, item.optionView);
 			item.optionValue = optionValue //枚举
 			return item;
 		},
-		buildCriteriaItem(criteria, valueMap, optionsMap) {
+		buildCriteriaItem(criteria, valueMap) {
 			let item = {};
-			item.id = "criteria_" + criteria.id;
+			item.id = "c_" + criteria.id;
 			item.title = criteria.title;
-			item.optionView = criteria.inputType;
-			item.value = this.getDetailValue(valueMap[criteria.id], criteria.inputType);
-			item.optionValue = optionsMap[criteria.mStrucFieldId] //枚举
+			item.optionView = criteria.controlType;
+			item.value = this.getDetailValue(valueMap[criteria.id], criteria.controlType);
+			item.optionValue = server.getEnum(criteria.mstrucId) //枚举
 			return item;
 		},
-		buildCriteriaItems(criterias, valueMap, optionsMap) {
+		buildCriteriaItems(criterias, valueMap) {
 			let items = [];
 			for (const criteria of criterias) {
-				items.push(this.buildCriteriaItem(criteria, valueMap, optionsMap));
+				items.push(this.buildCriteriaItem(criteria, valueMap));
 			}
 			return items;
 		},
 		buildCriteriaFormData(criteriaItems) {
 			let formData = {};
 			for (const criteria of criteriaItems) {
-				//if (valueMap[criteria.id]) {
 					formData[criteria.id] = criteria.value;
-				// } else {
-				// 	formData["criteria_" + criteria.id] = criteria.defaultValue
-				// }
-				// formData.push(item);
 			}
 			return formData;
-		},
-		async getOptionsMap(dtmplConfig_cs) {
-			let requestSelectArr = [];
-			let optionsMap;
-			dtmplConfig_cs.dtmpl.dtmpl.groups.forEach((item) => {
-				item.fields.forEach((it) => {
-					if (it.type === "select" || it.type === "multiselect" || it.type ===
-						"preselect") {
-						requestSelectArr.push(it.mStrucFieldId)
-					}
-				})
-			})
-			if (requestSelectArr.length > 0) {
-				optionsMap = await server.getSelect(requestSelectArr);
-			}
-			return optionsMap;
 		},
 		setUndefinedStrValueToNull(obj) {
 			let result = {};
@@ -479,13 +412,14 @@
 		getDetailValue(value_, optionView) {
 			let value = value_ ? value_ : "";
 			if ((optionView == 'file' || optionView == 'picture' || optionView == 'takePhoto') && value) {
+				console.log('fileValue typeof', typeof(value));
 				if (typeof(value) == 'string') {
 					value = JSON.parse(value);
 					console.log('fileValue', value);
 					value = {
 						name: value.base.fileName,
 						extname: value.base.type,
-						url: uni.getStorageSync("serverUrl") + "v3/files/" + value.base.path +
+						url:requset.joinPath(requset.joinPath(uni.getStorageSync("serverUrl"),"v3/files/"), value.base.path) +
 							`?@token=${uni.getStorageSync("hydrocarbon-token")}`,
 					}
 				} else if (!value.name) {
@@ -493,6 +427,12 @@
 				}
 			} else if (optionView == 'multiselect' && value && typeof(value) == 'string') {
 				value = value.split(",");
+			}else if(optionView=='daterange' || optionView=='datetimerange' ){
+				if(value.includes('~')){
+					value= value.split("~")
+				}else{
+					value= value.split(",")
+				}
 			} else {
 				let vin = value.indexOf('@R@');
 				if (vin >= 0) {
@@ -520,7 +460,7 @@
 
 			let res = await server.uploadFile(file.path);
 			console.log('uploadFile res', res);
-			if (res.status == 'suc') {
+			if (res.status == "success") {
 				page.formData[item.id] = {
 					"name": file.name,
 					"extname": this.getFileExtname(file.name),

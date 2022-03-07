@@ -5,7 +5,7 @@
 			</uni-section>
 			<view v-for="(list,index3) in group.lists">
 				<uni-card isShadow>
-					<ItemListView :dataItem="list"></ItemListView>
+					<item-list-view :dataItem="list"></item-list-view>
 					<view v-if="group.detailable">
 						<view>
 							<button @click.stop="clickToGroupDetail(list.code,group.id)">
@@ -47,7 +47,7 @@
 				console.log(entityCode + "_" + fieldGroupId);
 				//let dtmplConfigKey = await server.requestGroupDtmplConfig_menu(this.menuId, fieldGroupId);
 				uni.navigateTo({
-					url: `../detail/detail?type=${server.getGroupType(this.options.type)}&entityCode=${entityCode}&menuId=${this.options.menuId}&fieldGroupId=${fieldGroupId}&ratmplId=${this.options.ratmplId}&leafCode=${this.options.leafCode}`,
+					url: `../detail/detail?sourceName=field-group&entityCode=${entityCode}&sourceId=${fieldGroupId}&leafCode=${this.options.leafCode}`,
 				})
 			}
 		}

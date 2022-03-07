@@ -72,7 +72,7 @@
 				var data = await server.login(
 					username, password, this.kaptchaToken, kaptchaText, this.pubkey
 				);
-				if (data.status == "suc") {
+				if (data.status == "success") {
 					console.log("登陆成功");
 					uni.setStorageSync("hydrocarbon-token", data.token);
 					uni.switchTab({

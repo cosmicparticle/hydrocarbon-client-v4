@@ -9,7 +9,7 @@
 								<view class="list-content-row-col-title">
 									<text class="slot-box slot-title-text">{{item.title}}</text>
 								</view>
-							</uni-col>
+							</uni-col> 
 
 							<uni-col :span="18" class="list-content-row-col-title">
 								<view v-if="item.optionView=='text'" class="list-content-row-col-title">
@@ -75,7 +75,7 @@
 
 <script>
 	export default {
-		name: "ItemView",
+		name: "item-list-view",
 		data() {
 			return {
 
@@ -152,15 +152,6 @@
 				// 预览图片
 				uni.previewImage({
 					urls: [fileItem.url],
-					// longPressActions: {
-					// 	itemList: ['发送给朋友', '保存图片', '收藏'],
-					// 	success: function(data) {
-					// 		console.log('选中了第' + (data.tapIndex + 1) + '个按钮,第' + (data.index + 1) + '张图片');
-					// 	},
-					// 	fail: function(err) {
-					// 		console.log(err.errMsg);
-					// 	}
-					// }
 				});
 			},
 			imageError(e) {
@@ -223,6 +214,5 @@
 		margin: 6rpx 8rpx;
 		justify-content: center;
 	}
-
 	.list-content-row-col-content {}
 </style>

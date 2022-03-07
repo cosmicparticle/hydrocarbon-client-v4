@@ -15,63 +15,92 @@
 
 			};
 		},
-		async getSelect(selectMSFieldIdArray) {
-			let selectMSFieldIdMap = uni.getStorageSync('selectMSFieldIdMap');
-			selectMSFieldIdMap = await this.requestSelect(selectMSFieldIdMap, selectMSFieldIdArray);
-			if (!uni.getStorageSync('selectMSFieldIdMap')) {
-				uni.setStorageSync('selectMSFieldIdMap', selectMSFieldIdMap);
-			}
-			return selectMSFieldIdMap;
+		findUnloadEnumMstrucIdOfFields(fields) {
+			let enumMap = uni.getStorageSync('enumMap');
+		    const mstrucIds = [];
+		    if (fields) {
+		        fields.forEach((item) => {
+		            if (item.controlType == "select" || item.controlType == "multiselect" || item.controlType ==
+						"preselect" || item.controlType == "steps") {
+		                if(!enumMap[item.mstrucId]){
+		                    mstrucIds.push(item.mstrucId);
+		                }
+		            }
+		        });
+		    }
+		    return mstrucIds;
 		},
-		async requestSelectS(selectMSFieldIdArray) {
-			let mstrucIds = ""
-			selectMSFieldIdArray.forEach((item) => {
-				mstrucIds += item + ","
-			})
-			if (selectMSFieldIdArray.length > 0) {
+		async loadEnumOfDtmplConfig(selectConfig){
+		    const mstrucIds = [];
+		    if(selectConfig.groups){
+		        selectConfig.groups.forEach(group=>{
+		            let subs= this.findUnloadEnumMstrucIdOfFields(group.fields);
+		            this.concat(mstrucIds,subs);
+		        })
+		    }
+		    await this.loadEnum(mstrucIds);
+		},
+		async loadEnumOfSelectConfig(selectConfig){
+		    const mstrucIds = [];
+		   let subs= this.findUnloadEnumMstrucIdOfFields(selectConfig.columns);
+		    this.concat(mstrucIds,subs);
+		    subs= this.findUnloadEnumMstrucIdOfFields(selectConfig.criterias);
+		    this.concat(mstrucIds,subs);
+		    await this.loadEnum(mstrucIds);
+		},
+		concat(mstrucIds,sub){
+		    if(sub){
+		        sub.forEach((id)=>{
+		            if(!mstrucIds.includes(id)){
+		                mstrucIds.push(id);
+		            }
+		        })
+		    }
+		    return mstrucIds;
+		},
+		getEnum(mstrucId) {
+			let enumMap = uni.getStorageSync('enumMap');
+			if(!enumMap){
+				enumMap={};
+				uni.setStorageSync('enumMap',enumMap)
+			}
+			return enumMap[mstrucId];
+		},
+		async putEnums(enumMap_) {
+			if(enumMap_){
+				let enumMap = uni.getStorageSync('enumMap');
+				if(!enumMap){
+					enumMap={};	
+				} 
+				uni.setStorageSync('enumMap',{...enumMap_,...enumMap});
+			}
+		},
+		async loadEnum(mstrucIds) {
+			let enumMap = {};
+			if (mstrucIds && mstrucIds.length > 0) {
 				let res = await request.request({
 					url: `v3/field/enum`,
 					data: {
 						mstrucIds
 					},
 				});
-				let sourceOptionsMap = res.optionsMap;
-				//let targetOptionsMap=new Map();
-				//console.log('枚举：', sourceOptionsMap);
-				for (let key in sourceOptionsMap) {
-					console.log('arr：', sourceOptionsMap[key]);
-					for (let ar of sourceOptionsMap[key]) {
-						ar.text = ar.title
+				console.log('res.enumMap ：', res.enumMap);
+				
+				for (let key in res.enumMap) {
+					let enums=res.enumMap[key];
+					enumMap[key]=[];
+					for (let e of enums){
+						enumMap[key].push({...e,text:e.title});
 					}
 				}
-				console.log('枚举：', res.optionsMap);
-				return res.optionsMap;
-			} else {
-				return new Map();
+				console.log('枚举：', enumMap);
+				this.putEnums(enumMap);
 			}
-		},
-
-		async requestSelect(requestedMap, selectMSFieldIdArray) {
-			//先从当前状态从中找，没有的才去查
-			//后续可以放在缓存里，但需要一些策略和技巧
-			if (!requestedMap) {
-				requestedMap = await this.requestSelectS(selectMSFieldIdArray);
-			} else {
-				let needRequest = []
-				selectMSFieldIdArray.forEach(function(item, index, arr) {
-					if (!requestedMap[item]) {
-						needRequest.push(item);
-					}
-				})
-				let subOptionsMap = await this.requestSelectS(needRequest);
-				for (let key in subOptionsMap) {
-					requestedMap[key] = subOptionsMap[key];
-				}
-			}
-			return requestedMap;
+			
+			return enumMap;
 		},
 		async getDtmplConfig(options) {
-			return  this.requestDtmplConfig(options.sourceName,options.sourceId);
+			return await this.requestDtmplConfig(options.sourceName,options.sourceId);
 		},
 		async getUserDtmplConfig() {
 			let key = "userDtmplConfig";
@@ -92,29 +121,12 @@
 			}
 			return key;
 		},
-		// getGroupType(type) {
-		// 	if (type.indexOf("group") > 0) {
-		// 		return type;
-		// 	} else {
-		// 		return type + "_group";
-		// 	}
-		// },
-		// getGroupStmplType(type) {
-		// 	if (type.indexOf("stmpl") > 0) {
-		// 		return type;
-		// 	} else if (type.indexOf("group") > 0) {
-		// 		return type + "_stmpl";
-		// 	} else {
-		// 		return type + "_group_stmpl";
-		// 	}
-		// },
 		async requestDtmplConfig(sourceName,sourceId, type) {
 			let configs = uni.getStorageSync('dtmplConfig');
 			if(!configs){
-				configs=new Map();
-				uni.setStorageSync('dtmplConfig',configs);
+				configs={};
 			}
-			let config=configs.get(sourceId);
+			let config=configs[sourceId];
 			if(!config){
 				let url = `v3/${sourceName}/dtmpl/config`
 				let res = await request.request({
@@ -130,122 +142,63 @@
 					sourceName,
 					sourceId
 				};
-				configs.set(sourceId,config);
+				await this.loadEnumOfSelectConfig(res.dtmplConfig);
+				configs[sourceId]=config;
+				uni.setStorageSync('dtmplConfig',configs);
 			}
-			return {...config};
+			return config;
 		},
-
-
-		// async requestGroupStmplConfig_menu(menuId, fieldGroupId) {
-		// 	let key = menuId + fieldGroupId + "menuStmplConfig";
-		// 	let config = uni.getStorageSync(key)
-		// 	//console.log(dtmplConfig);
-		// 	if (!config) {
-		// 		let url = `v2/menu/${menuId}/field-group/${fieldGroupId}/stmpl-config`
-		// 		let config = await this.requestStmplConfig(url);
-		// 		uni.setStorageSync(key, {
-		// 			config,
-		// 			menuId,
-		// 			fieldGroupId,
-		// 			type: "filed-group-stmpl",
-		// 			key,
-		// 		});
-		// 	}
-		// 	return key;
-		// },
-		// async requestGroupStmplConfig_ratmpl(ratmplId, fieldGroupId) {
-		// 	let key = ratmplId + fieldGroupId + "ratmplStmplConfig";
-		// 	let config = uni.getStorageSync(key)
-		// 	//console.log(dtmplConfig);
-		// 	if (!config) {
-		// 		let url = `v2/ratmpl/${ratmplId}/field-group/${fieldGroupId}/stmpl-config`
-		// 		let config = await this.requestStmplConfig(url);
-		// 		uni.setStorageSync(key, {
-		// 			config,
-		// 			ratmplId,
-		// 			fieldGroupId,
-		// 			type: "ratmpl_group_stmpl",
-		// 			key,
-		// 		});
-		// 	}
-		// 	return key;
-		// },
-		// async requestRfieldStmplConfig_menu(menuId, fieldId) {
-		// 	let key = fieldId + "rFieldStmplConfig";
-		// 	let config = uni.getStorageSync(key)
-		// 	//console.log(dtmplConfig);
-		// 	if (!config) {
-		// 		let url = `v2/menu/${menuId}/rfield/${fieldId}/stmpl-config`
-		// 		let config = await this.requestStmplConfig(url);
-		// 		uni.setStorageSync(key, {
-		// 			config,
-		// 			menuId,
-		// 			fieldId,
-		// 			type: "rfield-stmpl",
-		// 			key,
-		// 		});
-		// 	}
-		// 	return key;
-		// },
-		//{type:[menu_group_stmpl|ratmpl_group_stmpl|menufield_group_stmpl],menuId,fieldGroupId,fieldId,ratmplId}
 		async getStmplConfig(sourceName,sourceId) {
 			let configs = uni.getStorageSync('stmplConfig');
 			if(!configs){
-				configs=new Map();
+				configs={};
+				//uni.setStorageSync('stmplConfig',configs);
+			}
+			let config=configs[sourceId];
+			if(!config){
+				config=await this.requestStmplConfig(sourceName,sourceId);
+				configs[sourceId]=config;
 				uni.setStorageSync('stmplConfig',configs);
 			}
-			let config=configs.get(sourceId);
-			if(!config){
-				config=this.requestStmplConfig(sourceName,sourceId);
-				configs.set(sourceId,config);
-			}
-			return {...config};
-			// if (options.type == "menu-group-stmpl") {
-			// 	key = await this.requestGroupStmplConfig_menu(options.menuId, options.fieldGroupId);
-			// } else if (options.type == "ratmpl_group_stmpl") {
-			// 	key = await this.requestGroupStmplConfig_ratmpl(options.ratmplId, options.fieldGroupId);
-			// } else if (options.type == "rfield-group-stmpl") {
-			// 	key = await this.requestRfieldStmplConfig_menu(options.menuId, options.fieldId);
-			// }
-			// return uni.getStorageSync(key);
+			return config;
 		},
 		async requestStmplConfig(sourceName,sourceId) {
 			let url = `/v3/${sourceName}/select/config`;
 			let res = await request.request({
 				url,
 				method: "GET",
+				data:{sourceId}
 			})
 			let config = {};
-			if (res.config) {
+			if (res.selectConfig) {
 				let ltmpl = {}
-				ltmpl.columns = res.config.columns
-				ltmpl.criterias = res.config.criterias
-				config.ltmpl = ltmpl;
-				config.selectMSFieldIdArray = this.getselectMSFieldIdArray(ltmpl.criterias, ltmpl.columns);
+				config.ltmpl = res.selectConfig;
+				await this.loadEnumOfSelectConfig(res.selectConfig);
 			}
-			return config;
+			return {...config};
 		},
 		async requestLtmplConfig(sourceName,sourceId) {
-			let configs = uni.getStorageSync('dtmplConfig');
+			let configs = uni.getStorageSync('ltmplConfig');
 			if(!configs){
-				configs=new Map();
-				uni.setStorageSync('dtmplConfig',configs);
+				configs={};
+				// uni.setStorageSync('ltmplConfig',configs);
 			}
-			let config=configs.get(sourceId);
+			let config=configs[sourceId];
 			if(!config){
+				let url = `/v3/${sourceName}/ltmpl/config`;
 				let res = await request.request({
 					url,
+					data:{sourceId},
 					method: "GET",
 				})
 				config = {};
-				let ltmpl = res.ltmpl;
-				config.ltmpl = res.ltmpl;
-				config.tmplGroup = res.tmplGroup;
-				config.statView = res.statView;
-				config.selectMSFieldIdArray = this.getselectMSFieldIdArray(ltmpl.criterias, ltmpl.columns);
-				configs.set(sourceId,config);
+				let ltmpl=res.ltmplConfig;
+				config.ltmpl = ltmpl;
+				await this.loadEnumOfSelectConfig(res.ltmplConfig);
+				configs[sourceId]=config;
+				uni.setStorageSync('ltmplConfig',configs);
 			}
-			
+			return config;
 		},
 		async getLtmplConfig(options) {
 			return await this.requestLtmplConfig(options.sourceName,options.sourceId);
@@ -265,27 +218,12 @@
 		async postDtmplEntity(options) {
 			console.log("post options", options)
 			let dtmplConfig = await this.getDtmplConfig(options);
-			// console.log("post dtmplConfig", dtmplConfig)
-			// let sourceId=undefined;
-			// if (dtmplConfig.type == "menu") {
-			// 	sourceId=dtmplConfig.menuId;
-			// } else if (dtmplConfig.type == "field-group") {
-			// 	sourceId=dtmplConfig.fieldGroupId;
-			// } else if (dtmplConfig.type == "ratmpl") {
-			// 	sourceId=dtmplConfig.ratmplId;
-			// }else if (dtmplConfig.type == "rfield") {
-			// 	sourceId=dtmplConfig.rfieldId;
-			// } 
-			// if(sourceId){
-			return postDtmplData(dtmplConfig.sourceName,dtmplConfig.sourceId,options
+			return this.postDtmplData(dtmplConfig.sourceName,dtmplConfig.sourceId,options
 						.formData);
-			// }else{
-			// 	return undefined;
-			// }
-			
 		},
 
 		async postDtmplData(sourceName,sourceId,formData) {
+			formData['%sourceId%']=sourceId;
 			let url = `/v3/${sourceName}/dtmpl/data`;
 			let res = await request.request({
 				url: url,
@@ -294,7 +232,7 @@
 			}, 'formdata')
 			let code = null;
 			if (res) {
-				if (res.status == "suc") {
+				if (res.status == "success") {
 					let msg = ""
 					if (res.message) {
 						msg = res.message;
@@ -319,33 +257,16 @@
 			let res = await request.uploadFile(filePath);
 			return res;
 		},
-		// async getDtmplEntity(dtmplConfigKey, entityCode, versionId) {
-		// 	let dtmplConfig = uni.getStorageSync(dtmplConfigKey);
-		// 	let sourceId=undefined;
-		// 	if (dtmplConfig.type == "menu") {
-		// 		sourceId=dtmplConfig.menuId;
-		// 	} else if (dtmplConfig.type == "field-group") {
-		// 		sourceId=dtmplConfig.fieldGroupId;
-		// 	} else if (dtmplConfig.type == "ratmpl") {
-		// 		sourceId=dtmplConfig.ratmplId;
-		// 	}
-		// 	if(sourceId){
-		// 		return this.requestDtmplData(dtmplConfig.type,sourceId,entityCode, versionId);
-		// 	}else{
-		// 		return undefined;
-		// 	}
-			
+		// async getDtmplEntity(dtmplConfig, entityCode, versionId) {	
+		// 	return this.requestDtmplData(dtmplConfig.sourceName,dtmplConfig.sourceId,entityCode, versionId);
 		// },
-		async getDtmplEntity(dtmplConfig, entityCode, versionId) {	
-			return this.requestDtmplData(dtmplConfig.sourceName,dtmplConfig.sourceId,entityCode, versionId);
-		},
 		async getUserDtmplEntity() {
 			let url = `v3/user/dtmpl/data`;
 			let res = await request.request({
 				url: url,
 				method: 'GET'
 			})
-			if (res.status === "suc") {
+			if (res.status === "success") {
 				return res.entity;
 			} else {
 				message.error("实体不存在！")
@@ -361,7 +282,7 @@
 					},
 				method: 'GET'
 			})
-			if (res.status === "suc") {
+			if (res.status === "success") {
 				return res.entity;
 			} else {
 				message.error("实体不存在！")
@@ -379,61 +300,39 @@
 				data: {codes,sourceId},
 				method: 'GET'
 			})
-			if (res.status === "suc") {
+			if (res.status === "success") {
 				return res.entities;
 			} else {
 				message.error("实体不存在！")
 				return null;
 			}
 		},
-		async getGroupLtmplQueryKey(options) {
-			let queryKey
-			if (options.type == "menu-group-stmpl" || options.type == "ratmpl_group_stmpl") {
-				let exceptCodes = options.exceptCodes;
-				let condition = options.condition;
-				queryKey = await this.requestLtmplQueryKey('field-group', options.fieldGroupId, {
-					exceptCodes,
-					...condition,
-				});
-			} else if (options.type == "rfield-stmpl") {
-				//key=await this.requestRfieldStmplConfig_menu(options.menuId, options.fieldId);
-				let exceptCodes = options.exceptCodes;
-				let condition = options.condition;
-				queryKey = await this.requestLtmplQueryKey('rfield', options.fieldId, {
-					exceptCodes,
-					...condition,
-				});
-			}
-			return queryKey;
+		async getGroupLtmplQuery(options) {
+			let queryInfo;
+			let exceptCodes = options.exceptCodes;
+			let condition = options.condition;
+			queryInfo = await this.requestLtmplQuery(options.sourceName, options.sourceId, {
+				exceptCodes,
+				...condition,
+			}); 
+			return queryInfo;
 		},
-		async getLtmplQueryKey(options) {
-			let queryKey
-			if (options.menuId) {
-				queryKey = await this.requestLtmplQueryKey('menu',options.menuId, options.condition);
-			} else {
-				queryKey = await this.requestLtmplQueryKey('ratmpl',options.ratmplId, options
-					.condition);
-			}
-			return queryKey;
+		async getLtmplQuery(options) {
+			let queryInfo=await this.requestLtmplQuery(options.sourceName,options.sourceId, options.condition);
+			return queryInfo;
 		},
 
-		async requestLtmplQueryKey(souceName,sourceId, condition) {
-			let url_ = `v3/${souceName}/ltmpl/query/key`
+		async requestLtmplQuery(souceName,sourceId, condition) {
+			let url = `v3/${souceName}/ltmpl/query/key`
 			let res = await request.request({
-				url: url,
+				url,
 				method: 'GET',
 				data:{...condition,sourceId }
 			})
 			let queryInfo = {};
-			
-			//const selectMSFieldIdArray = this.getselectMSFieldIdArray(res.ltmpl.criterias, res.ltmpl.columns);
-			
-			//this.setCriteriasValue(res.ltmpl.criterias, res.criteriaValueMap);
 			queryInfo.criteriaValueMap = res.criteriaValueMap;
-			queryInfo.queryKey = res.queryKey;
-			//queryInfo.moduleTitle = res.statView ? res.statView.title : res.tmplGroup.title;
-			queryInfo.disabledColIds = res.disabledColIds;
-			//queryInfo.selectMSFieldIdArray = selectMSFieldIdArray;
+			queryInfo.queryKey = res.key;
+			queryInfo.drillingColIds = res.drillingColIds;
 			return queryInfo;
 		},
 		async requestLtmplCount_menu(sourceId) {
@@ -441,8 +340,7 @@
 			let res = await request.request({
 				url: url,
 				method: 'GET',
-				data:{sourceId	
-				}
+				data:{sourceId}
 			})
 			return res.count;
 		},
@@ -455,25 +353,6 @@
 				}
 			})
 			return criterias;
-		},
-
-		getselectMSFieldIdArray(criterias, columns) {
-			const selectMSFieldIdArray = [];
-			if (criterias) {
-				criterias.forEach((item) => {
-					if (item.inputType === "select" || item.inputType === "multiselect") {
-						selectMSFieldIdArray.push(item.mStrucFieldId)
-					}
-				})
-			}
-			if (columns) {
-				columns.forEach((item) => {
-					if (item.viewOption === "select" || item.viewOption === "multiselect") {
-						selectMSFieldIdArray.push(item.mStrucFieldId)
-					}
-				})
-			}
-			return selectMSFieldIdArray;
 		},
 
 		async requestQueryEntities(queryKey, pageInfo) {
@@ -707,7 +586,7 @@
 				url: 'v3/auth/kaptcha',
 				method: "POST"
 			})
-			if (res.status === 'suc') {
+			if (res.status === "success") {
 				return res
 			} else {
 				return null;
@@ -735,7 +614,7 @@
 				},
 				method: "GET"
 			})
-			if (res.status === 'suc') {
+			if (res.status === "success") {
 				window.location.hash = "#/home";
 				Units.setLocalStorge("hydrocarbonToken", res.token)
 			}
@@ -796,7 +675,7 @@
 				url: 'v3/auth/ras-pubkey',
 				method: "GET"
 			})
-			if (res.status === 'suc') {
+			if (res.status === "success") {
 				return res.rasPubkey;
 			} else {
 				return null;
