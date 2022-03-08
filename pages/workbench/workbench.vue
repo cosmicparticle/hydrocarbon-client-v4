@@ -16,6 +16,24 @@
 		<uni-card>
 			<view class="row-view">
 				<uni-row>
+							<uni-col :span="6">
+								<navigator >
+									<!-- <view class='work-item'> -->
+									<view class='work-item-l2 ipm-work-item-l2'>
+										<view class='work-item-l2-row'>
+											<view class='ipmwork-item-iconfont'>
+												<text class="scanning-iconfont">&#xe8b5;</text>
+											</view>
+										</view>
+										<view class='work-item-l2-row'>
+											<view class='work-item-title'>
+												扫一扫
+											</view>
+										</view>
+									</view>
+									<!-- </view> -->
+								</navigator>
+							</uni-col>
 					<!-- 重点工作 显示数字 -->
 					<view v-for="(item,index) in faceplateStatistic">
 						<uni-col :span="6">
@@ -36,7 +54,6 @@
 								<!-- </view> -->
 							</navigator>
 						</uni-col>
-
 					</view>
 				</uni-row>
 			</view>
@@ -50,9 +67,8 @@
 							<navigator :url="item.url">
 								<view class='work-item-l2'>
 									<view class='work-item-l2-row'>
-										<view class='work-item-logo'>
-											<image class='work-item-logo-icon' src="../../static/workbanch/menu.png">
-											</image>
+										<view class='quick-entrance-logo'>
+											<text class="quick-entrance-iconfont" :style="{'color':colors[index]}">&#xe743;</text>
 										</view>
 									</view>
 									<view class='work-item-l2-row'>
@@ -80,10 +96,8 @@
 											<navigator :url="item.url">
 												<view class='work-item-l2'>
 													<view class='work-item-l2-row'>
-														<view class='work-item-logo'>
-															<image class='work-item-logo-icon'
-																src="../../static/workbanch/menu.png">
-															</image>
+														<view class='work-item-logo' :style="{'background-color':colors[index3]}">
+															<text class="l2menu-iconfont">&#xe606;</text>
 														</view>
 													</view>
 													<view class='work-item-l2-row'>
@@ -117,6 +131,7 @@
 				faceplateStatistic: [],
 				faceplateDaily: [],
 				blocks: [],
+				colors:['#096dd9','#1890ff','#cf1322','#f5222d','#1d39c4','#2f54eb','#d4380d','#fa541c','#d48806','#faad14']
 
 			}
 		},
@@ -185,6 +200,24 @@
 		justify-content: center;
 		width: 750upx;
 	}
+	.scanning-iconfont{
+		font-family: iconfont;
+		margin-right: 2rpx;
+		color: #007AFF;
+		font-size: 32px;
+		padding: 10px;
+	}
+	.ipmwork-item-iconfont {
+		width: 70upx;
+		height: 70upx;
+		/* border: 1upx solid #dddddd; */
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		color: red;
+		font-weight: 800;
+		border-radius: 10upx;
+	}
 
 	.swiper {
 		width: 730upx;
@@ -243,7 +276,6 @@
 		color: red;
 		font-weight: 800;
 		border-radius: 10upx;
-
 	}
 
 	.work-block-title {
@@ -257,16 +289,38 @@
 
 	.work-item-title {
 		color: #888888;
-		font-weight: 400;
-		font-size: 15px;
-		padding-top: 4px;
+		font-weight: 500;
+		font-size: 12px;
+		padding-top: 10px;
 	}
-
+	.quick-entrance-iconfont{
+		font-family: iconfont;
+		margin-right: 2rpx;
+		color: #007AFF;
+		font-size: 40px;
+		padding: 10px;
+	}
+	.l2menu-iconfont{
+		font-family: iconfont;
+		margin-right: 2rpx;
+		color: #fff;
+		font-size: 32px;
+		padding: 10px;
+	}
+.quick-entrance-logo{
+	width: 72upx;
+	height: 72upx;
+	/* background-color: #fff; */
+	border-radius: 16upx;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
 	.work-item-logo {
-		width: 64upx;
-		height: 64upx;
+		width: 72upx;
+		height: 72upx;
 		background-color: #007AFF;
-		border-radius: 32upx;
+		border-radius: 16upx;
 		display: flex;
 		justify-content: center;
 		align-items: center;

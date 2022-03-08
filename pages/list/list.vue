@@ -29,7 +29,7 @@
 		<view class='list-tabbar'>
 			<view v-if="totalCount==null">
 				<text class="mini-button-iconfont">&#xe679;</text>
-				<text style="line-height:35px;font-size: 16px;padding-left: 5px;color: #007AFF;"
+				<text class="show-more-button"
 					@click="clickShowMore">点击查看更多</text>
 			</view>
 			<!-- 底部导航 -->

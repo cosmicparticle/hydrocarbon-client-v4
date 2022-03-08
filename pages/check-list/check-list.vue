@@ -19,7 +19,8 @@
 		<empty v-else></empty>
 		<view class='list-tabbar'>
 			<view v-if="totalCount==null">
-				<text style="line-height:30px;font-size: 14px;padding-left: 5px;" @click="clickShowMore">点击查看更多</text>
+				<text class="mini-button-iconfont">&#xe679;</text>
+				<text class='show-more-button' @click="clickShowMore">点击查看更多</text>
 			</view>
 			<view v-else>
 				<!-- 底部导航 -->
