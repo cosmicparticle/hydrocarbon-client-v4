@@ -172,7 +172,7 @@
 			let config = {};
 			if (res.selectConfig) {
 				let ltmpl = {}
-				config.ltmpl = res.selectConfig;
+				config.stmpl = res.selectConfig;
 				await this.loadEnumOfSelectConfig(res.selectConfig);
 			}
 			return {...config};
@@ -289,9 +289,15 @@
 				return null;
 			}
 		},
-		async getFieldGroupEntities(queryInfo) {
-			console.log("FieldGroupEntities options", queryInfo);
-			return requestSelectedData('field-group',queryInfo.fieldGroupId, queryInfo.selectedCodes)
+		async requestStmplConfigCriterias(sourceName,sourceId){
+			if(sourceName=='field-group' || sourceName=='rfield' || sourceName =='rcriteria'){
+				return	(await this.requestStmplConfig(sourceName,sourceId)).stmpl.criterias;
+			}else{
+				return	(await this.requestLtmplConfig(sourceName,sourceId)).ltmpl.criterias;
+			}
+		},
+		async getFieldGroupEntities(sourceId,selectedCodes) {
+			return await this.requestSelectedData('field-group',sourceId, selectedCodes)
 		},
 		async requestSelectedData(sourceName,sourceId, codes) {
 			let url = `/v3/${sourceName}/data/selected`

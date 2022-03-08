@@ -10,13 +10,12 @@
 									<text class="slot-box slot-title-text">{{item.title}}</text>
 								</view>
 							</uni-col> 
-
 							<uni-col :span="18" class="list-content-row-col-title">
 								<view v-if="item.optionView=='text'" class="list-content-row-col-title">
 									<rich-text :nodes='item.value' class=""></rich-text>
 								</view>
 								<view
-									v-else-if="(item.optionView=='picture'  || item.optionView == 'takePhoto') && item.value && item.value.extname && ['png', 'jpg','jpeg','gif','psd','svg','tiff','bmp','ico'].indexOf(item.value.extname)>=0 "
+									v-else-if="(item.optionView=='file' || item.optionView=='picture'  || item.optionView == 'takePhoto') && item.value && item.value.extname && ['png', 'jpg','jpeg','gif','psd','svg','tiff','bmp','ico'].indexOf(item.value.extname)>=0 "
 									class="list-content-row-col-title">
 									<image style="width: 100px; height: 100px; background-color: #eeeeee;"
 										:src="item.value.url" @click="clickImg(item.value)" :title='item.value.name'

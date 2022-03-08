@@ -294,12 +294,12 @@
 					title: "数据加载中..."
 				});
 				//去查询数据并补充到detailEntity中
-				entitys_ds = await server.getFieldGroupEntities(this.newGroupSelected);
+				entitys_ds = await server.getFieldGroupEntities(this.newGroupSelected.sourceId,this.newGroupSelected.selectedCodes);
 				console.log("edit select ds", entitys_ds);
 				dataTransUtils.unshiftGroupEntity2DetailEnity({
 					...this.options,
 					editedEntitys: entitys_ds,
-					fieldGroupId_ref: this.newGroupSelected.fieldGroupId,
+					fieldGroupId_ref: this.newGroupSelected.sourceId,
 					detailEntity: this.detailEntity,
 				})
 				this.newGroupSelected = null;
@@ -311,13 +311,13 @@
 					title: "数据加载中..."
 				});
 				//去查询数据并替换到detailEntity中
-				this.editedData.type = server.getGroupStmplType(this.options.type);
-				entitys_ds = await server.getFieldGroupEntities(this.editedData);
+				// this.editedData.type = server.getGroupStmplType(this.options.type);
+				entitys_ds = await server.getFieldGroupEntities(this.editedData.sourceId,this.editedData.selectedCodes);
 				console.log("new select ds", entitys_ds);
 				dataTransUtils.refreshGroupEntity2DetailEnity({
 					...this.options,
 					editedEntitys: entitys_ds,
-					fieldGroupId_ref: this.editedData.fieldGroupId,
+					fieldGroupId_ref: this.editedData.sourceId,
 					detailEntity: this.detailEntity,
 				})
 				this.editedData = null;
@@ -334,7 +334,7 @@
 					fieldGroupId_ref: this.currentBaseEditFormData.fieldGroupId,
 					detailEntity: this.detailEntity,
 				})
-				this.baseEditFormData.set(this.currentBaseEditFormData['唯一编码'],this.currentBaseEditFormData);
+				this.baseEditFormData.set(this.currentBaseEditFormData['code'],this.currentBaseEditFormData);
 				this.currentBaseEditFormData=null;
 			}
 		},
@@ -470,11 +470,10 @@
 					url,
 				})
 			},
-			async clickToBaseGroupEdit(fieldGroupId, baseEntityCode) {
+			async clickToBaseGroupEdit(fieldGroupId, entityCode) {
 				let url;
-				//if (entityCode) { //编辑或添加
 				url =
-					`../edit/baseEdit?sourceName=field-group&entityCode=${entityCode}&sourceId=${this.options.sourceId}&leafCode=${this.options.leafCode}`;
+					`../edit/base-edit?sourceName=field-group&entityCode_ref=${entityCode}&fieldGroupId_ref=${fieldGroupId}&sourceId=${this.options.sourceId}&leafCode=${this.options.leafCode}`;
 				uni.navigateTo({
 					url,
 				})

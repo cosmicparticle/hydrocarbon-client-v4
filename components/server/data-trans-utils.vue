@@ -146,7 +146,7 @@
 			let detailEntity = options.detailEntity;
 			//先找到对应的group
 			let neededGroup_cs;
-			for (const group of dtmplConfig_cs.dtmpl.dtmpl.groups) {
+			for (const group of dtmplConfig_cs.dtmpl.groups) {
 				if (group.id == fieldGroupId_ref) {
 					neededGroup_cs = group;
 					break;
@@ -167,7 +167,7 @@
 				});
 			} else {
 				for (const groupData_ds of unshiftEntitys) {
-					const fieldMap_ds = groupData_ds.byDfieldIds;
+					const fieldMap_ds = groupData_ds.fieldMap;
 					let list = {};
 					if (!needGroup_de.lists) {
 						needGroup_de.lists = [];
@@ -176,10 +176,10 @@
 						needGroup_de.relatedCodes = [];
 					}
 					needGroup_de.lists.unshift(list);
-					list.code = groupData_ds["唯一编码"];
+					list.code = groupData_ds["code"];
 					needGroup_de.relatedCodes.unshift({ //暂时只能支持一组一个关系类型
 						code: list.code,
-						relationLabel: neededGroup_cs.mStrucFieldGroup.relationTypeNames[0],
+						relationLabel: neededGroup_cs.relationNames[0],
 					});
 					list.items = [];
 					for (const field_cs of neededGroup_cs.fields) {
@@ -221,7 +221,7 @@
 				});
 			} else {
 				for (const groupData_ds of editedEntitys) {
-					const fieldMap_ds = groupData_ds.byDfieldIds;
+					const fieldMap_ds = groupData_ds.fieldMap;
 					let list = {};
 
 					if (!needGroup_de.lists) {
@@ -231,7 +231,7 @@
 						needGroup_de.relatedCodes = [];
 					}
 					let lists = needGroup_de.lists
-					list.code = groupData_ds["唯一编码"];
+					list.code = groupData_ds["code"];
 					let index_ds = null;
 					//查找原来entity，移除，再原地插入
 					for (const lindex in lists) {
@@ -335,7 +335,7 @@
 						}
 						//追加baseEditFormData
 						if (baseEditFormData.has(relatedCode.code)) {
-							editFormData_ = baseEditFormData.get(relatedCode.code).byDfieldIds;
+							editFormData_ = baseEditFormData.get(relatedCode.code).fieldMap;
 							for (const item1 of group.lists[index].items) {
 								if (editFormData_[item1.id]) {
 									//处理文件

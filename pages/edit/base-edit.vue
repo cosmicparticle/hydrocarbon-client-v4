@@ -114,9 +114,9 @@
 			uni.showLoading({
 				title: "数据加载中..."
 			});
-			let options = hcDataTransUtils.setUndefinedStrValueToNull(options_);
+			let options = dataTransUtils.setUndefinedStrValueToNull(options_);
 			console.log("edit onLoad options", options);
-			let code_ = options.entityCode_ref ? options.entityCode_ref : hcDataTransUtils.guid();
+			let code_ = options.entityCode_ref ? options.entityCode_ref : dataTransUtils.guid();
 			//获取baseentity
 			let datail_entity = null,
 				base_entity = null;
@@ -138,7 +138,7 @@
 					}
 				}
 			} else {
-				base_entity = await hcDataTransUtils.getEmptyBaseEnityOfGroup(options);
+				base_entity = await dataTransUtils.getEmptyBaseEnityOfGroup(options);
 			}
 			let form_data = {};
 			let rule_ = {}
@@ -174,8 +174,8 @@
 						let prevPage = pages[pages.length - 2]; //上一页页面实例
 						//prevPage.$vm.options.condition = that.formData; //修改上一页data里面的tagIndex 参数值
 						prevPage.$vm.currentBaseEditFormData = {
-							'唯一编码': that.code,
-							byDfieldIds: that.formData,
+							'code': that.code,
+							fieldMap: that.formData,
 							fieldGroupId: that.options.fieldGroupId_ref,
 						};
 						uni.navigateBack({
@@ -186,10 +186,10 @@
 					})
 			}, 
 			async selectFile(item) {
-				await hcDataTransUtils.selectFile(item, this);
+				await dataTransUtils.selectFile(item, this);
 			},
 			async deleteFile(item) {
-				await hcDataTransUtils.deleteFile(item, this);
+				await dataTransUtils.deleteFile(item, this);
 			}
 		}
 	}

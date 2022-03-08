@@ -112,9 +112,7 @@
 		},
 		async onLoad(options) {
 			console.log("来自criteria", options);
-			let config = await server.requestLtmplConfig(options.sourceName,options.sourceId);
-			//加入枚举
-			let criterias = config.ltmpl.criterias;
+			let criterias = await server.requestStmplConfigCriterias(options.sourceName,options.sourceId);
 			this.criteriaItems = dataTransUtils.buildCriteriaItems(criterias, options);
 			console.log("来自criteria,criteriaItems", this.criteriaItems);
 			this.formData = dataTransUtils.buildCriteriaFormData(this.criteriaItems);
@@ -122,16 +120,16 @@
 			console.log("来自criteria,formData", this.formData);
 		},
 		async onShow() {
-			if (!this.needReload) {
-				return;
-			}
-			console.log("reload:", this.options);
-			this.pageInfo.pageNo = 1;
-			let query_key = await server.getLtmplQueryKey(this.options);
-			this.initData(this.ltmplConfig, query_key, this.pageInfo);
-			this.queryKey = query_key;
-			this.totalCount = null;
-			this.needReload = false;
+			// if (!this.needReload) {
+			// 	return;
+			// }
+			// console.log("reload:", this.options);
+			// this.pageInfo.pageNo = 1;
+			//let query_key = await server.getLtmplQueryKey(this.options);
+			//this.initData(this.ltmplConfig, query_key, this.pageInfo);
+			//this.queryKey = query_key;
+			// this.totalCount = null;
+			// this.needReload = false;
 		},
 		methods: {
 			submitForm(form) {

@@ -113,7 +113,7 @@
 					data_list.push(dataItem);
 					dataItem.code = item.code;
 					dataItem.checked = false;
-					stmplConfig.ltmpl.columns.forEach((col, index) => {
+					stmplConfig.stmpl.columns.forEach((col, index) => {
 						if (col && col.title != '操作' && col.title != '序号') {
 							dataItem.items.push({
 								title: col.title,
@@ -150,18 +150,7 @@
 			},
 			async clickShowMore() {
 				//查询总量
-				this.totalCount = await server.requestTotalCount(this.queryKey.queryKey);
-			},
-			async footerClick(options) {
-				uni.showToast({
-					title: options,
-					icon: 'none'
-				})
-				let menuId = this.menuId;
-				let dtmplConfigKey = await server.requestDtmplConfig(menuId);
-				uni.navigateTo({
-					url: `../editTest/editTest?entityCode=${options}&dtmplConfigKey=${dtmplConfigKey}`,
-				})
+				this.totalCount = await server.requestTotalCount(this.queryInfo.queryKey);
 			},
 			checkboxChange: function(e) {
 				console.log(e.detail);
@@ -199,15 +188,15 @@
 				}
 			},
 			async clickShowMore() {
-				this.totalCount = await server.requestTotalCount(this.queryKey.queryKey);
+				this.totalCount = await server.requestTotalCount(this.queryInfo.queryKey);
 			},
 			async changePage(options) {
 				this.pageInfo.pageNo = options.current;
-				await this.initData(this.stmplConfig, this.queryKey.queryKey, this.pageInfo);
+				await this.initData(this.stmplConfig, this.queryInfo.queryKey, this.pageInfo);
 			},
 			clickToSelect() {
-				let url = `../criteria/criteria?key=${this.stmplConfig.key}`;
-				let criteriaValueMap = this.queryKey.criteriaValueMap;
+				let url = `../criteria/criteria?sourceName=${this.options.sourceName}&sourceId=${this.options.sourceId}`;
+				let criteriaValueMap = this.queryInfo.criteriaValueMap;
 				let criteriaStr = "";
 				for (let key in criteriaValueMap) {
 					if (criteriaValueMap[key]) {
