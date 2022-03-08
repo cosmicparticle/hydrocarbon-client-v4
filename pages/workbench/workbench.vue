@@ -274,7 +274,8 @@
 		justify-content: center;
 		align-items: center;
 		color: red;
-		font-weight: 800;
+		font-size: 20px;
+		font-weight: 640;
 		border-radius: 10upx;
 	}
 

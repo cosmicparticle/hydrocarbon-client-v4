@@ -70,8 +70,8 @@
 				<!-- 底部导航 -->
 				<uni-row class="demo-uni-row">
 					<uni-col :span="12">
-						<view @click="submitForm('form')">
-							<button type="primary" plain="true" class="button">确 定</button>
+						<view class="button" @click="submitForm('form')">
+							<button type="primary" plain="true" >确 定</button>
 						</view>
 					</uni-col>
 					<uni-col :span="12">

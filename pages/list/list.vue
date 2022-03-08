@@ -43,22 +43,23 @@
 						@change="changePage" />
 				</uni-col>
 			</uni-row>
+			<view class='button-only-tabbar'>
 			<uni-row>
 				<uni-col :span="12">
-					<view class="button ">
+					<view class="button uni-btn-v ">
 						<button type="primary" plain="true" :disabled="!operates.queryBtn" @click.stop="clickToSelect()">
-							<icon class="footer-box__item" type="search" size="20"/>
-							<text class="footer-box__item">筛 选</text></button>
+							<text class="normal-button-iconfont">&#xe67d;</text>
+							<text >筛 选</text>
+							</button>
 					</view>
 				</uni-col>
 				<uni-col :span="12">
-					<view class="button ">
-						<view class="uni-btn-v">
+						<view class="button uni-btn-v">
 							<button type="primary" plain="true" :disabled="!operates.createBtn" @click.stop="clickToEdit()">添 加</button>
 						</view>
-					</view>
 				</uni-col>
 			</uni-row>
+			</view>
 		</view>
 		<view>
 			<!-- 提示信息弹窗 -->

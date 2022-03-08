@@ -39,7 +39,11 @@
 				<uni-col :span="12">
 					<view class="button uni-padding-wrap ">
 						<view class="uni-btn-v">
-					<button class="button" @click.stop="clickToSelect">筛 选</button>
+							
+					<button class="button" @click.stop="clickToSelect">
+						<text class="normal-button-iconfont">&#xe67d;</text>
+						<text class="footer-box__item">筛 选</text>
+						</button>
 					</view>
 					</view>
 				</uni-col>

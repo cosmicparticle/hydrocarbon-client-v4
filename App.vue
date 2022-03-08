@@ -64,20 +64,7 @@
 		font-size: 16px;
 		color: #007AFF;
 	}
-	.quick-entrance-iconfont{
-		font-family: iconfont;
-		margin-right: 2rpx;
-		color: #007AFF;
-		font-size: 32px;
-		padding: 10px;
-	}
-	.l2menu-iconfont{
-		font-family: iconfont;
-		margin-right: 2rpx;
-		color: #fff;
-		font-size: 32px;
-		padding: 10px;
-	}
+	
 
 	.mini-button-iconfont {
 		font-family: iconfont;
@@ -90,9 +77,9 @@
 	.normal-button-iconfont {
 		font-family: iconfont;
 		margin-right: 20rpx;
-		color: #2C405A;
-		font-size: 16px;
-		padding: 10px 5px;
+		color: #597ef7;
+		font-size: 18px;
+		padding: 0px 5px;
 	}
 
 	.iconfont-title {
@@ -152,6 +139,7 @@
 		padding-left: 10px;
 		padding-right: 10px;
 		margin-top: 2px;
+		margin-bottom: 2px;
 	}
 
 	,
