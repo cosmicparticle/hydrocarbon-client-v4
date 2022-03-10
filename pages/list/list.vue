@@ -4,7 +4,6 @@
 			<view v-for="(items,index1) in dataList">
 				<uni-card isShadow>
 					<text>{{(pageInfo.pageSize * (pageInfo.pageNo-1))+index1+1}}</text>
-					<!-- < :dataItem="items"></item-list-view> -->
 					<item-list-view :dataItem="items" ></item-list-view>
 					<view class="list-footer-box">
 						<button v-if="operates.detailBtn" size="mini" @click.stop="clickToDetail(items.code)">

@@ -16,6 +16,7 @@
 		<uni-card>
 			<view class="row-view">
 				<uni-row>
+					<!--  #ifndef H5 -->
 							<uni-col :span="6">
 								<navigator >
 									<!-- <view class='work-item'> -->
@@ -34,6 +35,7 @@
 									<!-- </view> -->
 								</navigator>
 							</uni-col>
+					<!-- #endif -->
 					<!-- 重点工作 显示数字 -->
 					<view v-for="(item,index) in faceplateStatistic">
 						<uni-col :span="6">

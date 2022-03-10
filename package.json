@@ -1,0 +1,10 @@
+{
+    "id": "hydrocarbon-client-v4",
+    "name": "",
+    "version": "0.1",
+    "description": "",
+    "keywords": [],
+    "devDependencies": {
+        "moment": "^2.29.1"
+    }
+}

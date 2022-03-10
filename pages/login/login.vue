@@ -62,7 +62,7 @@
 					this.kaptchaToken = res.kaptchaToken;
 					this.needKaptcha = true;
 				}
-			},
+			}, 
 			async formSubmit(e) {
 				var me = this;
 				var username = e.detail.value.username;

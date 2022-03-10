@@ -7,7 +7,7 @@
 <script>
 	import request from './request.vue';
 	import moment from 'moment';
-	import JSEncrypt from 'jsencrypt';
+	import JSEncrypt from '../jsencrypt/jsencrypt.js';
 	export default {
 		name: "server",
 		data() {
@@ -278,7 +278,7 @@
 			let res = await request.request({
 				url: url,
 				data: {
-						code,versionId,sourceId
+						code,versionId:versionId?versionId:"",sourceId
 					},
 				method: 'GET'
 			})
@@ -300,10 +300,17 @@
 			return await this.requestSelectedData('field-group',sourceId, selectedCodes)
 		},
 		async requestSelectedData(sourceName,sourceId, codes) {
+			let codes_str;
+			if(codes instanceof Array){
+				codes_str=codes.toString();
+			}else{
+				codes_str=codes;
+			}
+			
 			let url = `/v3/${sourceName}/data/selected`
 			let res = await request.request({
 				url: url,
-				data: {codes,sourceId},
+				data: {codes:codes_str,sourceId},
 				method: 'GET'
 			})
 			if (res.status === "success") {
