@@ -29,6 +29,18 @@
 			<button type="primary" :loading="submitLoading" form-type="submit"
 				style="margin-top: 60upx;width: 90%; ">登录</button>
 		</form>
+		<view class="login-bar">
+			<view>
+				<label class="company-name">©2022 Created by KUANGKIE</label>
+			</view> 
+<!-- 			<view>
+				<label class="company-name"></label>
+			</view> -->
+			<view  class="company-name" >
+				<label >杭州旷识科技有限公司</label>
+			</view>
+			
+		</view>
 		<view>
 			<!-- 提示信息弹窗 -->
 			<uni-popup ref="message" type="message">

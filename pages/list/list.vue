@@ -127,6 +127,12 @@
 			}
 			await this.reLoad();
 		},
+		async onPullDownRefresh(){
+			this.needReload=false;
+			this.editedData={};
+			await this.reLoad();
+			uni.stopPullDownRefresh();
+		},
 		methods: {
 			//用加载列表数据
 			async initData(ltmplConfig, queryInfo, pageInfo) {

@@ -13,8 +13,8 @@
 }
 
 .face {
-	width: 160upx;
-	height: 160upx;
+	width: 200upx;
+	height: 200upx;
 }
 
 /*头像end*/
@@ -41,6 +41,19 @@
 	width: 220upx;
 	margin-left: 38upx;
 	margin-right: 40upx;
+}
+.login-bar{
+	width: 750upx;
+	position: fixed;
+	left: 0px;
+	bottom: 40upx;
+}
+
+.company-name{
+	display:flex;
+	flex-direction: row;
+	justify-content: center;
+	color: #bfbfbf;
 }
 
 .graywords {

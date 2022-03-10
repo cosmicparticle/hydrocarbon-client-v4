@@ -207,7 +207,6 @@
 						actions: null
 					}
 				},
-				menuId: "",
 				options: {},
 				newGroupSelected: null,
 				editedData: null,
@@ -250,44 +249,14 @@
 			});
 			let options = dataTransUtils.setUndefinedStrValueToNull(options_);
 			console.log("edit onLoad options", options);
-			this.detailEntity = await dataTransUtils.getDetailEnity(options);
-			//组织formdata
-			let form_data = {};
-			let rule_={}
-			for (const group of this.detailEntity.groups) {
-				if (!group.isArray) {
-					for (const list of group.lists) {
-						for (const item of list.items) {
-							if (item.value) {
-								form_data[item.id] = item.value;
-							}else if(item.required){
-								form_data[item.id] = undefined;
-							}
-							if(item.required){
-								rule_[item.id]={};
-								rule_[item.id]['rules']=[];
-								rule_[item.id]['rules'].push({
-									required: true,
-									errorMessage: '请输入'+item.title,
-								})
-							}
-						}
-					}
-				}
-			}
-			this.rules=rule_;
-			this.formData = Object.assign({}, this.formData, form_data);
-			this.menuId = this.detailEntity.menuId;
 			this.options = options;
-			console.log("detailEntity:", this.detailEntity);
+			await this.initData(options);
 			uni.hideLoading();
 		},
 		async onShow() {
-			
 			console.log("edit onShow options", this.options);
 			console.log("edit onshow", this.newGroupSelected);
 			let entitys_ds = null;
-			
 			//处理点选
 			if (this.newGroupSelected && this.newGroupSelected.selectedCodes.length > 0) {
 				uni.showLoading({
@@ -338,7 +307,41 @@
 				this.currentBaseEditFormData=null;
 			}
 		},
+		async onPullDownRefresh(){
+			await this.initData(this.options);
+			uni.stopPullDownRefresh();
+		},
 		methods: {
+			async initData(options){
+				this.detailEntity = await dataTransUtils.getDetailEnity(options);
+				//组织formdata
+				let form_data = {};
+				let rule_={}
+				for (const group of this.detailEntity.groups) {
+					if (!group.isArray) {
+						for (const list of group.lists) {
+							for (const item of list.items) {
+								if (item.value) {
+									form_data[item.id] = item.value;
+								}else if(item.required){
+									form_data[item.id] = undefined;
+								}
+								if(item.required){
+									rule_[item.id]={};
+									rule_[item.id]['rules']=[];
+									rule_[item.id]['rules'].push({
+										required: true,
+										errorMessage: '请输入'+item.title,
+									})
+								}
+							}
+						}
+					}
+				}
+				this.rules=rule_;
+				this.formData = Object.assign({}, this.formData, form_data);
+				console.log("detailEntity:", this.detailEntity);
+			},
 			moreAction() {
 				const that = this;
 				let itemList = [];

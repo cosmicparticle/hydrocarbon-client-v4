@@ -5,7 +5,6 @@
 			console.log('App Launch')
 			console.log("1" + this.serverUrl);
 			uni.setStorageSync("serverUrl", this.serverUrl);
-			
 			// let messageList = await server.requestMessagebar_menu();
 			// for (const item of messageList) {
 			// 	setInterval(async () => {
@@ -141,7 +140,6 @@
 		margin-top: 2px;
 		margin-bottom: 2px;
 	}
-
 	,
 	.button-only-tabbar {
 		width: 100%;

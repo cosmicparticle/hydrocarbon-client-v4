@@ -4,7 +4,8 @@
 		    "path" : "pages/login/login",
 		    "style" :                                                                                    
 		    {
-		        "navigationBarTitleText": "登陆页面",
+				"navigationBarTitleText": "登陆页面",
+				"navigationBarBackgroundColor":"#fff",
 		        "enablePullDownRefresh": false
 		    }
 		    
@@ -19,6 +20,8 @@
             "path" : "pages/workbench/workbench",
             "style" :                                                                                    
             {
+				"navigationBarBackgroundColor":"#10239e",
+				"navigationBarTextStyle":"white",
                 "navigationBarTitleText": "工作台",
                 "enablePullDownRefresh": false
             }
@@ -29,7 +32,7 @@
             "style" :                                                                                    
             {
                 "navigationBarTitleText": "列表页面",
-                "enablePullDownRefresh": false
+                "enablePullDownRefresh": true
             }
             
         }
@@ -38,7 +41,7 @@
             "style" :                                                                                    
             {
                 "navigationBarTitleText": "详情页面",
-                "enablePullDownRefresh": false
+                "enablePullDownRefresh": true
             }
             
         }
@@ -47,7 +50,7 @@
             "style" :                                                                                    
             {
                 "navigationBarTitleText": "编辑页面",
-                "enablePullDownRefresh": false
+                "enablePullDownRefresh": true
             }
             
         }
@@ -115,9 +118,9 @@
         }
     ],
 	"globalStyle": {
-		"navigationBarTextStyle": "black",
+		"navigationBarTextStyle": "white",
 		"navigationBarTitleText": "HydrocarbonApp",
-		"navigationBarBackgroundColor": "#F8F8F8",
+		"navigationBarBackgroundColor": "#0050b3",
 		"backgroundColor": "#F8F8F8"
 	},
 	"tabBar": {

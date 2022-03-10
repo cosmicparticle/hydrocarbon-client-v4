@@ -27,7 +27,6 @@
 		data() {
 			return {
 				detailEntity: {},
-				menuId: "",
 				options: null,
 			}
 		},
@@ -37,10 +36,13 @@
 			});
 			let options = dataTransUtils.setUndefinedStrValueToNull(options_);
 			this.detailEntity = await dataTransUtils.getDetailEnity(options);
-			this.menuId = this.detailEntity.menuId;
 			console.log(this.detailEntity);
 			this.options = options;
 			uni.hideLoading();
+		},
+		async onPullDownRefresh(){
+			this.detailEntity = await dataTransUtils.getDetailEnity(this.options);
+			uni.stopPullDownRefresh();
 		},
 		methods: {
 			async clickToGroupDetail(entityCode, fieldGroupId) {

@@ -1,6 +1,6 @@
 <template>
 	<view class='main'>
-		<view class="page-section-spacing">
+		<!-- <view class="page-section-spacing">
 			<swiper class="swiper" :indicator-dots="indicatorDots" :autoplay="autoplay" :interval="interval"
 				:duration="duration">
 				<swiper-item>
@@ -12,8 +12,8 @@
 					<image class='image' src="../../static/workbanch/jd1002.jpg">
 				</swiper-item>
 			</swiper>
-		</view>
-		<uni-card>
+		</view> -->
+		<uni-card :isFull="true" >
 			<view class="row-view">
 				<uni-row>
 					<!--  #ifndef H5 -->
@@ -37,7 +37,7 @@
 							</uni-col>
 					<!-- #endif -->
 					<!-- 重点工作 显示数字 -->
-					<view v-for="(item,index) in faceplateStatistic">
+					<view  v-for="(item,index) in faceplateStatistic">
 						<uni-col :span="6">
 							<navigator :url="item.url">
 								<!-- <view class='work-item'> -->
@@ -61,7 +61,7 @@
 			</view>
 		</uni-card>
 		<!-- 快捷入口 -->
-		<uni-card title='快捷入口' isShadow>
+		<uni-card   title='快捷入口' isShadow>
 			<view class="row-view">
 				<uni-row>
 					<view v-for="(item,index) in faceplateDaily">
@@ -86,8 +86,8 @@
 			</view>
 		</uni-card>
 		<!-- 嵌套循环下的 uni-collapse 在微信不能正常显示 -->
-		<view v-for="(block,index1) in blocks">
-			<uni-card :title='block.title' isShadow>
+		<view  v-for="(block,index1) in blocks">
+			<uni-card :margin="false" class="uni-card-wb" :title='block.title' isShadow>
 				<view v-for="(l1Menu,index2) in block.l1Menus">
 					<uni-collapse>
 						<uni-collapse-item :title="l1Menu.title">
@@ -188,12 +188,18 @@
 </script>
 
 <style>
+/* 	page{
+		background-color: #f4f4f4;
+	} */
+	.uni-card-wb{
+		/* margin:12px 5px; */
+	}
 	.main {
-		background-color: #eeeeee;
+		/* background-color: #000; */
 		/* display: flex;
 		justify-content: center; */
 		/* flex-wrap: wrap; */
-		width: 750upx;
+		/* width: 750upx; */
 		font-size: 12px;
 	}
 
