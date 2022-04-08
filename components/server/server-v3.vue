@@ -128,7 +128,7 @@
 			}
 			let config=configs[sourceId];
 			if(!config){
-				let url = `v3/${sourceName}/dtmpl/config`
+				let url = `v3/dtmpl/config`
 				let res = await request.request({
 					url,
 					method: "GET",
@@ -163,7 +163,7 @@
 			return config;
 		},
 		async requestStmplConfig(sourceName,sourceId) {
-			let url = `/v3/${sourceName}/select/config`;
+			let url = `/v3/select/config`;
 			let res = await request.request({
 				url,
 				method: "GET",
@@ -185,7 +185,7 @@
 			}
 			let config=configs[sourceId];
 			if(!config){
-				let url = `/v3/${sourceName}/ltmpl/config`;
+				let url = `/v3/ltmpl/config`;
 				let res = await request.request({
 					url,
 					data:{sourceId},
@@ -205,7 +205,7 @@
 		},
 		async requestVersionList(sourceName,sourceId, code) {
 			let res = await request.request({
-				url: `/v3/${sourceName}/data/versions`,
+				url: `/v3/data/versions`,
 				data: {
 					pageNo: 1,
 					sourceId,
@@ -224,7 +224,7 @@
 
 		async postDtmplData(sourceName,sourceId,formData) {
 			formData['%sourceId%']=sourceId;
-			let url = `/v3/${sourceName}/dtmpl/data`;
+			let url = `/v3/dtmpl/data`;
 			let res = await request.request({
 				url: url,
 				data: formData,
@@ -274,7 +274,7 @@
 			}
 		},
 		async requestDtmplData(sourceName,sourceId, code,versionId) {
-			let url = `/v3/${sourceName}/dtmpl/data`;
+			let url = `/v3/dtmpl/data`;
 			let res = await request.request({
 				url: url,
 				data: {
@@ -307,7 +307,7 @@
 				codes_str=codes;
 			}
 			
-			let url = `/v3/${sourceName}/data/selected`
+			let url = `/v3/data/selected`
 			let res = await request.request({
 				url: url,
 				data: {codes:codes_str,sourceId},
@@ -331,16 +331,16 @@
 			return queryInfo;
 		},
 		async getLtmplQuery(options) {
-			let queryInfo=await this.requestLtmplQuery(options.sourceName,options.sourceId, options.condition);
+			let queryInfo=await this.requestLtmplQuery(options.sourceName,options.sourceId,options.mainCode, options.condition);
 			return queryInfo;
 		},
 
-		async requestLtmplQuery(souceName,sourceId, condition) {
-			let url = `v3/${souceName}/ltmpl/query/key`
+		async requestLtmplQuery(souceName,sourceId,mainCode, condition) {
+			let url = `v3/ltmpl/query/key`
 			let res = await request.request({
 				url,
 				method: 'GET',
-				data:{...condition,sourceId }
+				data:{...condition,sourceId,mainCode }
 			})
 			let queryInfo = {};
 			queryInfo.criteriaValueMap = res.criteriaValueMap;
@@ -349,7 +349,7 @@
 			return queryInfo;
 		},
 		async requestLtmplCount_menu(sourceId) {
-			let url = `v3/menu/ltmpl/data/count`;
+			let url = `v3/ltmpl/data/count`;
 			let res = await request.request({
 				url: url,
 				method: 'GET',
@@ -388,10 +388,10 @@
 		},
 		async deleteEntities(sourceName,sourceId, codes) {
 			let res = await request.request({
-				url: `v3/${sourceName}/data`,
+				url: `v3/ltmpl/data`,
 				data: {
 					codes,
-					leftCode
+					sourceId
 				},
 				method: 'DELETE',
 			})
@@ -417,23 +417,24 @@
 			return res;
 		},
 		async postActions(options) {
-			let type = options.type;
-			if (type.indexOf('menu') >= 0) {
-				return await this.postActions_menu(options.menuId, options.actionId, options.selectCodes);
-			} else if (type.indexOf('ratmpl') >= 0) {
-				return await this.postActions_ratmpl(options.ratmpl, options.leftCode, options.actionId, options
-					.selectCodes);
-			}
+			console.log("postActions(options)：",options);
+			//let type = options.type;
+			return await this.postActions1(options.actionId,options.selectCodes);
+			// if (type.indexOf('menu') >= 0) {
+			// 	return await this.postActions_menu(options.menuId, options.actionId, options.selectCodes);
+			// } else if (type.indexOf('ratmpl') >= 0) {
+			// 	return await this.postActions_ratmpl(options.ratmpl, options.leftCode, options.actionId, options
+			// 		.selectCodes);
+			// }
 		}
 		,
 		
-		async postActions(sourceName,sourceId, actionId, selectCodes) {
+		async postActions1( actionId, selectCodes) {
 			let res = await request.request({
-				url: `v3/${sourceName}/action`,
+				url: `v3/action`,
 				data: {
 					codes: selectCodes,
-					actionId,
-					sourceId
+					'%sourceId%':actionId
 				},
 				method: "POST",
 			})
@@ -443,13 +444,13 @@
 			return result;
 		},
 
-		async postActions_menu(menuId, actionId, selectCodes) {
-			return this.postActions('menu',menuId, actionId, selectCodes);
-		},
+		// async postActions_menu(menuId, actionId, selectCodes) {
+		// 	return this.postActions('menu',menuId, actionId, selectCodes);
+		// },
 
-		async postActions_ratmpl(ratmplId, actionId, selectCodes) {
-			return this.postActions('ratmpl',ratmplId, actionId, selectCodes);
-		},
+		// async postActions_ratmpl(ratmplId, actionId, selectCodes) {
+		// 	return this.postActions('ratmpl',ratmplId, actionId, selectCodes);
+		// },
 
 // //服务端暂不支持
 // 		async postJumps_ratmpl(ratmplId, leftCode, jumpId, selectCodes) {
@@ -467,7 +468,7 @@
 
 		async postJumps_menu(sourceId, jumpId, selectCodes) {
 			let res = await request.request({
-				url: `v3/menu/jump`,
+				url: `v3/jump`,
 				data: {
 					codes: selectCodes,
 					jumpId,
@@ -480,7 +481,7 @@
 
 		async recalc_menu(sourceId) {
 			let res = await request.request({
-				url: `v3/menu/stat/recalc`,
+				url: `v3/stat/recalc`,
 				method: "POST",
 				data:{
 					sourceId
@@ -491,7 +492,7 @@
 
 		async incRecalc_menu(sourceId) {
 			let res = await request.request({
-				url: `v3/menu/stat/increcalc`,
+				url: `v3/stat/increcalc`,
 				method: "POST",
 				data:{
 					sourceId
@@ -521,7 +522,7 @@
 
 		async loadTxt(path) {
 			let res = await request.request({
-				url: "v2/files/text/" + path,
+				url: "v3/files/text/" + path,
 				method: "GET",
 			})
 			return res.text;
@@ -583,7 +584,7 @@
 			}
 			let userInfo = this.rsaEncrypt(JSON.stringify(json), pubkey);
 			let res = await request.request({
-				url: 'v2/auth/hctoken',
+				url: 'v3/auth/hctoken',
 				data: {
 					userInfo,
 					kaptchaToken,
@@ -662,27 +663,27 @@
 			})
 			return res.l2Menus;
 		},
-		async requestSimpleChartsEntities_menu(menuId) {
-			let url = `v3/menu/${menuId}/ltmpl/top_thousand_entities`
-			let res = await request.request({
-				url: url,
-				method: "GET",
-			})
-			let entities = res.entities;
-			if (!res.entities || res.entities.length < 1 || !res.ltmpl || !res.ltmpl.columns || res.ltmpl.columns
-				.length < 3) {
-				return undefined;
-			}
-			let columns = res.ltmpl.columns;
-			let data = [];
-			for (const entity of entities) {
-				let item = {};
-				item.type = entity.fieldMap[columns[1].id]
-				item.value = parseInt(entity.fieldMap[columns[2].id])
-				data.push(item);
-			}
-			return data;
-		},
+		// async requestSimpleChartsEntities_menu(menuId) {
+		// 	let url = `v3/menu/${menuId}/ltmpl/top_thousand_entities`
+		// 	let res = await request.request({
+		// 		url: url,
+		// 		method: "GET",
+		// 	})
+		// 	let entities = res.entities;
+		// 	if (!res.entities || res.entities.length < 1 || !res.ltmpl || !res.ltmpl.columns || res.ltmpl.columns
+		// 		.length < 3) {
+		// 		return undefined;
+		// 	}
+		// 	let columns = res.ltmpl.columns;
+		// 	let data = [];
+		// 	for (const entity of entities) {
+		// 		let item = {};
+		// 		item.type = entity.fieldMap[columns[1].id]
+		// 		item.value = parseInt(entity.fieldMap[columns[2].id])
+		// 		data.push(item);
+		// 	}
+		// 	return data;
+		// },
 		async getRasPubkey() {
 			let res = await request.request({
 				url: 'v3/auth/ras-pubkey',

@@ -101,12 +101,12 @@
 					await this.getKaptchaToken();
 					if (data.status == "error") {
 						this.msgType = 'error';
-						this.messageText = data.errorMsg;
+						this.messageText = data.message;
 						this.$refs.message.open();
 					} else {
 						//console.log(res.data);
 						this.msgType = 'error';
-						this.messageText = data;
+						this.messageText = data.message;
 						this.$refs.message.open();
 					}
 				}

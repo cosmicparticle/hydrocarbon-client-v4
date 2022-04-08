@@ -21,7 +21,7 @@
 		},
 		async getDetailEnity(options) {
 				let dtmplConfig_cs = await server.getDtmplConfig(options);
-				let leftCode = options.leftCode;
+				let mainCode = options.mainCode;
 				let entityCode = options.entityCode;
 				let versionId = options.versionId;
 				
@@ -305,8 +305,8 @@
 			if (formData['%actionId%']) {
 				commitFormData['%actionId%'] = formData['%actionId%'];
 			}
-			if (formData['%leftCode%']) {
-				commitFormData['%leftCode%'] = formData['%leftCode%'];
+			if (formData['%mainCode%']) {
+				commitFormData['%mainCode%'] = formData['%mainCode%'];
 			}
 			for (const group of detailEntity.groups) {
 				if (!group.isArray) {

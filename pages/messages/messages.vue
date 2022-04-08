@@ -2,7 +2,7 @@
 	<view>
 		<uni-section title="消息列表" type="line"></uni-section>
 		<uni-list v-for="(item,index1) in messages">
-			<uni-list-item :title="item.title" :show-badge="true" badgeType='error' :badge-text="item.count+''" link :to="`../list/list?type=menu&menuId=${item.id}`"  />
+			<uni-list-item :title="item.title" :show-badge="true" badgeType='error' :badge-text="item.count+''" link :to="`../list/list?sourceId=${item.id}`"  />
 		</uni-list>
 	</view>
 </template>

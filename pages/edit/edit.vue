@@ -377,8 +377,8 @@
 							formData: that.formData,
 							baseEditFormData:that.baseEditFormData,
 						}
-						if(that.options.leftCode){
-							formDataOptions.formData['%leftCode%']=that.options.leftCode;
+						if(that.options.mainCode){
+							formDataOptions.formData['%mainCode%']=that.options.mainCode;
 						}
 						
 						let submitData = await dataTransUtils.transFormData(formDataOptions); 

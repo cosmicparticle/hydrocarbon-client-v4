@@ -272,7 +272,7 @@
 							// });
 							let menuId = this.menuId;
 							let url;
-							url = `../list/list?sourceName=ratmpl&sourceId=${ratmplId}&leftCode=${that.actioningEntityCode}`;
+							url = `../list/list?sourceName=ratmpl&sourceId=${ratmplId}&mainCode=${that.actioningEntityCode}`;
 							uni.navigateTo({
 								url,
 							})
@@ -310,14 +310,14 @@
 				// })
 				let menuId = this.menuId;
 				uni.navigateTo({
-					url: `../detail/detail?sourceName=${this.options.sourceName}&entityCode=${entityCode}&sourceId=${this.options.sourceId}&leftCode=${this.options.leftCode}`,
+					url: `../detail/detail?sourceName=${this.options.sourceName}&entityCode=${entityCode}&sourceId=${this.options.sourceId}&mainCode=${this.options.mainCode}`,
 				})
 			},
 			async clickToEdit(entityCode) {
 				let menuId = this.menuId;
 				let url;
 				//if (entityCode) { //编辑 或 添加
-				url = `../edit/edit?sourceName=${this.options.sourceName}&entityCode=${entityCode}&sourceId=${this.options.sourceId}&leftCode=${this.options.leftCode}`;
+				url = `../edit/edit?sourceName=${this.options.sourceName}&entityCode=${entityCode}&sourceId=${this.options.sourceId}&mainCode=${this.options.mainCode}`;
 				uni.navigateTo({
 					url,
 				})
