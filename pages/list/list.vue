@@ -169,7 +169,7 @@
 						if (col && col.title != '操作' && col.title != '序号') {
 							dataItem.items.push({
 								title: col.title,
-								optionView: col.controlType,
+								optionView: col.extControlType?col.extControlType:col.controlType,
 								value,
 							});
 						}

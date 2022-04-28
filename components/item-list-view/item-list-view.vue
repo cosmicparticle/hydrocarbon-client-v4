@@ -59,6 +59,9 @@
 									<uni-badge :text='item.value' :isDot="true" type="primary"></uni-badge>
 									<text style="padding-left: 10upx;">{{item.value}}</text>
 								</view>
+								<view v-else-if="item.optionView=='html'" class="list-content-row-col-title">
+									<rich-text :nodes="item.value" style="padding-left: 10upx;"></rich-text>
+								</view>
 								<view v-else class="list-content-row-col-title">
 									<text class="">{{item.value}}</text>
 								</view>

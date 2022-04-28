@@ -434,9 +434,25 @@
 					value= value.split(",")
 				}
 			} else {
-				let vin = value.indexOf('@R@');
-				if (vin >= 0) {
-					value = value.substr(vin + 3);
+				if(value instanceof Array){
+					let val="";
+					for(let v of value){
+						let vin = v.indexOf('@R@');
+						if (vin >= 0) {
+							val =val+ ","+v.substr(vin + 3);
+						}else{
+							val=","+v;
+						}
+					}
+					if(val.length>0){
+						val=val.substr(1);
+					}
+					value=val;
+				}else{
+					let vin = value.indexOf('@R@');
+					if (vin >= 0) {
+						value = value.substr(vin + 3);
+					}
 				}
 			}
 

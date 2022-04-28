@@ -61,6 +61,7 @@
 
 <script>
 	import server from '@/components/server/server-v3.vue';
+	import dataTransUtils from '@/components/server/data-trans-utils.vue';
 	export default {
 		data() {
 			return {
@@ -109,7 +110,7 @@
 			async initData(stmplConfig, queryKey, pageInfo) {
 				let query_list = await this.queryList(queryKey, pageInfo);
 				console.log("checkList query_list:", query_list);
-
+				console.log("checkList stmplConfig:", stmplConfig);
 				let data_list = [];
 				query_list.list.forEach((item, index) => {
 					let dataItem = {
@@ -119,11 +120,12 @@
 					dataItem.code = item.code;
 					dataItem.checked = false;
 					stmplConfig.stmpl.columns.forEach((col, index) => {
+						let value = dataTransUtils.getDetailValue(item[col.id],col.controlType);
 						if (col && col.title != '操作' && col.title != '序号') {
 							dataItem.items.push({
 								title: col.title,
-								viewOption: col.viewOption,
-								value: item[col.id],
+								optionView:col.controlType,
+								value,
 							});
 						}
 					});
