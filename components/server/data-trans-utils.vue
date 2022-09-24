@@ -85,7 +85,7 @@
 						detailBtn: buttons.includes("detail"),
 						editBtn: buttons.includes("rowEdit"),
 						createBtn: buttons.includes("rowAdd"),
-						createBtn_r: buttons.includes("dtmplAdd"),
+						dtmplCreateBtn: buttons.includes("dtmplAdd"),
 						editBtn_r: buttons.includes("dtmplEdit"),
 					}
 				

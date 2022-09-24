@@ -303,7 +303,7 @@
 				codes_str=codes;
 			}
 			
-			let url = `/v3/data/selected`
+			let url = `/v3/field-group/data/selected`
 			let res = await request.request({
 				url: url,
 				data: {codes:codes_str,sourceId},

@@ -7,17 +7,17 @@
 			<view v-for="(group,index1) in detailEntity.groups">
 				<view v-if="group.isArray">
 					<uni-section :title="group.title + (group.isArray?'(共'+group.lists.length+'项)':'')" type="line">
-						<button v-if="group.operates.createBtn && group.maxDataCount>group.lists.length" size="mini"
+						<button v-if="group.operates.createBtn && (!group.maxDataCount || group.maxDataCount>group.lists.length)" size="mini"
 							@click.stop="clickToBaseGroupEdit(group.id)">
 							<text class="iconfont">&#xe665;</text>
 							<text class="iconfont-title">添加</text>
 						</button>
-						<button v-if="group.operates.createBtn_r && group.maxDataCount>group.lists.length" size="mini"
+						<button v-if="group.operates.dtmplCreateBtn && (!group.maxDataCount || group.maxDataCount>group.lists.length)" size="mini"
 							@click.stop="clickToGroupEdit(group.id)">
 							<text class="iconfont">&#xe664;</text>
 							<text class="iconfont-title">添加</text>
 						</button>
-						<button v-if="group.operates.selectBtn && group.maxDataCount>group.lists.length" size="mini"
+						<button v-if="group.operates.selectBtn && (!group.maxDataCount || group.maxDataCount > group.lists.length)" size="mini"
 							@click.stop="toSelect(group.id,group.relatedCodes,group.maxDataCount)">
 							<text class="iconfont">&#xe631;</text>
 							<text class="iconfont-title">选择</text>
@@ -34,7 +34,7 @@
 									@click.stop="clickToBaseGroupEdit(group.id,list.code)">
 									<text class="mini-button-iconfont">&#xe75d;</text>
 									<text class="footer-box__item">编辑</text></button>
-								<button v-if="group.operates.editBtn_r" size="mini"
+								<button v-if="group.operates.dtmplEditBtn" size="mini"
 									@click.stop="clickToGroupEdit(group.id,list.code)">
 									<text class="mini-button-iconfont">&#xe66f;</text>
 									<text class="footer-box__item">编辑</text></button>
