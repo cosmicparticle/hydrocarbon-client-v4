@@ -112,7 +112,7 @@
 		},
 		async onLoad(options) {
 			console.log("来自criteria", options);
-			let criterias = await server.requestStmplConfigCriterias(options.sourceName,options.sourceId);
+			let criterias = await server.requestStmplConfigCriterias(options.sourceId);
 			this.criteriaItems = dataTransUtils.buildCriteriaItems(criterias, options);
 			console.log("来自criteria,criteriaItems", this.criteriaItems);
 			this.formData = dataTransUtils.buildCriteriaFormData(this.criteriaItems);

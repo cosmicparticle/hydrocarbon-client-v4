@@ -86,7 +86,7 @@
 		async onLoad(options) {
 			console.log("checkList参数:", options);
 			this.options = options;
-			let stmpl_config = await server.getStmplConfig(options.sourceName,options.sourceId);
+			let stmpl_config = await server.getStmplConfig(options.sourceId);
 			console.log("checkList stmpl_config:", stmpl_config);
 			let query_info = await server.getLtmplQuery({...options,condition:this.condition});
 			console.log("checkList query_info:", query_info);

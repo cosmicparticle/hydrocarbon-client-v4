@@ -20,8 +20,8 @@
 		    const mstrucIds = [];
 		    if (fields) {
 		        fields.forEach((item) => {
-		            if (item.controlType == "select" || item.controlType == "multiselect" || item.controlType ==
-						"preselect" || item.controlType == "steps") {
+		            if (item.controlType == "caselect" || item.controlType == "select" || item.controlType == "multiselect" || item.controlType ==
+						"preselect" || item.controlType == "steps"   || item.controlType == "checkbox" || item.controlType == "radio") {
 		                if(!enumMap[item.mstrucId]){
 		                    mstrucIds.push(item.mstrucId);
 		                }
@@ -79,7 +79,7 @@
 			let enumMap = {};
 			if (mstrucIds && mstrucIds.length > 0) {
 				let res = await request.request({
-					url: `v3/field/enum`,
+					url: `v3/enum`,
 					data: {
 						mstrucIds
 					},
@@ -100,7 +100,7 @@
 			return enumMap;
 		},
 		async getDtmplConfig(options) {
-			return await this.requestDtmplConfig(options.sourceName,options.sourceId);
+			return await this.requestDtmplConfig(options.sourceId);
 		},
 		async getUserDtmplConfig() {
 			let key = "userDtmplConfig";
@@ -115,13 +115,12 @@
 				if (res) {
 					uni.setStorageSync(key, {
 						dtmpl:res.dtmplConfig,
-						sourceName: "user",
 					});
 				}
 			}
 			return key;
 		},
-		async requestDtmplConfig(sourceName,sourceId, type) {
+		async requestDtmplConfig(sourceId, type) {
 			let configs = uni.getStorageSync('dtmplConfig');
 			if(!configs){
 				configs={};
@@ -139,7 +138,6 @@
 				})
 				 config={
 					dtmpl:res.dtmplConfig,
-					sourceName,
 					sourceId
 				};
 				await this.loadEnumOfSelectConfig(res.dtmplConfig);
@@ -148,7 +146,7 @@
 			}
 			return config;
 		},
-		async getStmplConfig(sourceName,sourceId) {
+		async getStmplConfig(sourceId) {
 			let configs = uni.getStorageSync('stmplConfig');
 			if(!configs){
 				configs={};
@@ -156,13 +154,13 @@
 			}
 			let config=configs[sourceId];
 			if(!config){
-				config=await this.requestStmplConfig(sourceName,sourceId);
+				config=await this.requestStmplConfig(sourceId);
 				configs[sourceId]=config;
 				uni.setStorageSync('stmplConfig',configs);
 			}
 			return config;
 		},
-		async requestStmplConfig(sourceName,sourceId) {
+		async requestStmplConfig(sourceId) {
 			let url = `/v3/select/config`;
 			let res = await request.request({
 				url,
@@ -177,7 +175,7 @@
 			}
 			return {...config};
 		},
-		async requestLtmplConfig(sourceName,sourceId) {
+		async requestLtmplConfig(sourceId) {
 			let configs = uni.getStorageSync('ltmplConfig');
 			if(!configs){
 				configs={};
@@ -201,9 +199,9 @@
 			return config;
 		},
 		async getLtmplConfig(options) {
-			return await this.requestLtmplConfig(options.sourceName,options.sourceId);
+			return await this.requestLtmplConfig(options.sourceId);
 		},
-		async requestVersionList(sourceName,sourceId, code) {
+		async requestVersionList(sourceId, code) {
 			let res = await request.request({
 				url: `/v3/data/versions`,
 				data: {
@@ -218,12 +216,12 @@
 		async postDtmplEntity(options) {
 			console.log("post options", options)
 			let dtmplConfig = await this.getDtmplConfig(options);
-			return this.postDtmplData(dtmplConfig.sourceName,dtmplConfig.sourceId,options
+			return this.postDtmplData(dtmplConfig.sourceId,options
 						.formData);
 		},
 
-		async postDtmplData(sourceName,sourceId,formData) {
-			formData['%sourceId%']=sourceId;
+		async postDtmplData(sourceId,formData) {
+			formData['sourceId']=sourceId;
 			let url = `/v3/dtmpl/data`;
 			let res = await request.request({
 				url: url,
@@ -257,9 +255,7 @@
 			let res = await request.uploadFile(filePath);
 			return res;
 		},
-		// async getDtmplEntity(dtmplConfig, entityCode, versionId) {	
-		// 	return this.requestDtmplData(dtmplConfig.sourceName,dtmplConfig.sourceId,entityCode, versionId);
-		// },
+
 		async getUserDtmplEntity() {
 			let url = `v3/user/dtmpl/data`;
 			let res = await request.request({
@@ -273,7 +269,7 @@
 				return null;
 			}
 		},
-		async requestDtmplData(sourceName,sourceId, code,versionId) {
+		async requestDtmplData(sourceId, code,versionId) {
 			let url = `/v3/dtmpl/data`;
 			let res = await request.request({
 				url: url,
@@ -289,17 +285,17 @@
 				return null;
 			}
 		},
-		async requestStmplConfigCriterias(sourceName,sourceId){
-			if(sourceName=='field-group' || sourceName=='rfield' || sourceName =='rcriteria'){
-				return	(await this.requestStmplConfig(sourceName,sourceId)).stmpl.criterias;
-			}else{
-				return	(await this.requestLtmplConfig(sourceName,sourceId)).ltmpl.criterias;
-			}
+		async requestStmplConfigCriterias(sourceId){
+			//if(sourceName=='field-group' || sourceName=='rfield' || sourceName =='rcriteria'){
+				return	(await this.requestStmplConfig(sourceId)).stmpl.criterias;
+			// }else{
+			// 	return	(await this.requestLtmplConfig(sourceId)).ltmpl.criterias;
+			// }
 		},
 		async getFieldGroupEntities(sourceId,selectedCodes) {
-			return await this.requestSelectedData('field-group',sourceId, selectedCodes)
+			return await this.requestSelectedData(sourceId, selectedCodes)
 		},
-		async requestSelectedData(sourceName,sourceId, codes) {
+		async requestSelectedData(sourceId, codes) {
 			let codes_str;
 			if(codes instanceof Array){
 				codes_str=codes.toString();
@@ -324,18 +320,18 @@
 			let queryInfo;
 			let exceptCodes = options.exceptCodes;
 			let condition = options.condition;
-			queryInfo = await this.requestLtmplQuery(options.sourceName, options.sourceId, {
+			queryInfo = await this.requestLtmplQuery( options.sourceId, {
 				exceptCodes,
 				...condition,
 			}); 
 			return queryInfo;
 		},
 		async getLtmplQuery(options) {
-			let queryInfo=await this.requestLtmplQuery(options.sourceName,options.sourceId,options.mainCode, options.condition);
+			let queryInfo=await this.requestLtmplQuery(options.sourceId,options.mainCode, options.condition);
 			return queryInfo;
 		},
 
-		async requestLtmplQuery(souceName,sourceId,mainCode, condition) {
+		async requestLtmplQuery(sourceId,mainCode, condition) {
 			let url = `v3/ltmpl/query/key`
 			let res = await request.request({
 				url,
@@ -348,7 +344,7 @@
 			queryInfo.drillingColIds = res.drillingColIds;
 			return queryInfo;
 		},
-		async requestLtmplCount_menu(sourceId) {
+		async requestLtmplCount(sourceId) {
 			let url = `v3/ltmpl/data/count`;
 			let res = await request.request({
 				url: url,
@@ -379,14 +375,14 @@
 			return res;
 		},
 		async deleteEntities(options) {
-			if (options.menuId) {
-				return await this.deleteEntities('menu',options.menuId, options.codes);
-			} else {
-				return await this.deleteEntities('ratmpl',options.ratmplId, options.codes)
-			}
+			//if (options.menuId) {
+			//	return await this.deleteEntitiesd(options.menuId, options.codes);
+			//} else {
+				return await this.deleteEntitiesd(options.sourceId, options.codes)
+			//}
 
 		},
-		async deleteEntities(sourceName,sourceId, codes) {
+		async deleteEntitiesd(sourceId, codes) {
 			let res = await request.request({
 				url: `v3/ltmpl/data`,
 				data: {

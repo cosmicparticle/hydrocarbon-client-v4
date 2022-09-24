@@ -147,10 +147,10 @@
 			//console.log(data); 
 			for (const item of faceplate_statistic) {
 				setInterval(async () => {
-					let count = await server.requestLtmplCount_menu(item.id);
+					let count = await server.requestLtmplCount(item.id);
 					item.count = count;
 				}, 180000);
-				let count = await server.requestLtmplCount_menu(item.id);
+				let count = await server.requestLtmplCount(item.id);
 				item.count = count;
 				item.url = "../list/list?sourceName=menu&sourceId=" + item.id;
 			}

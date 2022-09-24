@@ -357,7 +357,7 @@
 					},
 					success: async (e) => {
 						console.log(e.tapIndex);
-						that.formData['%actionId%'] = that.detailEntity.operates.actions[e.tapIndex].id;
+						that.formData['actionId'] = that.detailEntity.operates.actions[e.tapIndex].id;
 						await this.submitForm('form');
 					}
 				})
@@ -378,7 +378,7 @@
 							baseEditFormData:that.baseEditFormData,
 						}
 						if(that.options.mainCode){
-							formDataOptions.formData['%mainCode%']=that.options.mainCode;
+							formDataOptions.formData['mainCode']=that.options.mainCode;
 						}
 						
 						let submitData = await dataTransUtils.transFormData(formDataOptions); 
@@ -400,7 +400,7 @@
 								})
 							}, 2000)
 						} else { //清空%actionId%
-							that.formData['%actionId%'] = null;
+							that.formData['actionId'] = null;
 						}
 					})
 					.catch(errors => {

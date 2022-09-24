@@ -5,40 +5,7 @@
 			console.log('App Launch')
 			console.log("1" + this.serverUrl);
 			uni.setStorageSync("serverUrl", this.serverUrl);
-			// let messageList = await server.requestMessagebar_menu();
-			// for (const item of messageList) {
-			// 	setInterval(async () => {
-			// 		let count = await server.requestLtmplCount_menu(item.id);
-			// 		item.count = count;
-			// 	}, 180000);
-			// 	let count = await server.requestLtmplCount_menu(item.id);
-			// 	item.count = count;
-			// 	if(count>0){
-			// 		uni.showTabBarRedDot({
-			// 			index:1,
-			// 		})
-			// 	}
-			// }
-			// console.log("messageList",messageList);
-			// uni.setStorageSync("messageList",messageList);
-			// setInterval(async () => {
-			// 	let messages=uni.getStorageSync("messageList");
-			// 	let count=0;
-			// 	for(const item of messages){
-			// 		count=count+item.count;
-			// 	}
-			// 	console.log('count:',count);
-			// 	if(count>0){
-			// 		uni.showTabBarRedDot({
-			// 			index:1,
-			// 		})
-			// 	}else{
-			// 		uni.hideTabBarRedDot({
-			// 			index:1,
-			// 		})
-			// 	}
-				
-			// }, 180000);
+			
 		},
 		onShow: function() {
 			console.log('App Show')

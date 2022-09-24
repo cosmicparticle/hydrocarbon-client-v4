@@ -29,7 +29,7 @@
 				
 				let entity_ds;
 				if (entityCode) {
-					entity_ds = await server.requestDtmplData(dtmplConfig_cs.sourceName,dtmplConfig_cs.sourceId, entityCode, versionId);
+					entity_ds = await server.requestDtmplData(dtmplConfig_cs.sourceId, entityCode, versionId);
 				} else {
 					entity_ds = {
 						arrayMap: {},
@@ -302,11 +302,11 @@
 				commitFormData['唯一编码'] = detailEntity.code;
 			}
 			//添加操作
-			if (formData['%actionId%']) {
-				commitFormData['%actionId%'] = formData['%actionId%'];
+			if (formData['actionId']) {
+				commitFormData['actionId'] = formData['actionId'];
 			}
-			if (formData['%mainCode%']) {
-				commitFormData['%mainCode%'] = formData['%mainCode%'];
+			if (formData['mainCode']) {
+				commitFormData['mainCode'] = formData['mainCode'];
 			}
 			for (const group of detailEntity.groups) {
 				if (!group.isArray) {

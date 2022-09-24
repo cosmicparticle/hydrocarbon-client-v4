@@ -20,10 +20,10 @@
 			let messageList = await server.requestMessagebar_menu();
 			for (const item of messageList) {
 				setInterval(async () => {
-					let count = await server.requestLtmplCount_menu(item.id);
+					let count = await server.requestLtmplCount(item.id);
 					item.count = count;
 				}, 180000);
-				let count = await server.requestLtmplCount_menu(item.id);
+				let count = await server.requestLtmplCount(item.id);
 				item.count = count;
 				if(count>0){
 					uni.showTabBarRedDot({
