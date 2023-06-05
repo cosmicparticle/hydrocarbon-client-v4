@@ -2,7 +2,7 @@
 	<view class=" body">
 		<form @submit="formSubmit">
 			<view class="face-wapper">
-				<image src="../../static/image/carbonlogo.png" class="face"></image>
+				<image src="../../static/image/kuangkielogo.png" class="face"></image>
 			</view>
 
 			<view class="info-wapper">

@@ -1,10 +1,21 @@
 <script>
 	import server from '@/components/server/server-v3.vue';
 	export default {
-		onLaunch:async function() {
+		onLaunch: async function() {
+			
 			console.log('App Launch')
+			console.log(new URL(window.location.href).origin)
 			console.log("1" + this.serverUrl);
-			uni.setStorageSync("serverUrl", this.serverUrl);
+			let appi=this.serverUrl;
+			if (appi == "/") { //以当前为主
+				let url = new URL(window.location.href);
+				let pathname = url.pathname.split('/kuangkie')[0];
+				appi = server.joinPath(url.origin, pathname);
+			} else if (!appi.startsWith("http")) {
+				appi = server.joinPath(new URL(window.location.href).origin, appi);
+			}
+			console.log("appi:" + appi);
+			uni.setStorageSync("serverUrl", appi);
 			
 		},
 		onShow: function() {
@@ -24,13 +35,13 @@
 		color: #0066CC;
 		font-size: 16px;
 	}
-	
-	.show-more-button{
-		line-height:35px;
+
+	.show-more-button {
+		line-height: 35px;
 		font-size: 16px;
 		color: #007AFF;
 	}
-	
+
 
 	.mini-button-iconfont {
 		font-family: iconfont;
@@ -107,6 +118,7 @@
 		margin-top: 2px;
 		margin-bottom: 2px;
 	}
+
 	,
 	.button-only-tabbar {
 		width: 100%;

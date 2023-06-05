@@ -695,7 +695,19 @@
 			const encrypt = new JSEncrypt();
 			encrypt.setPublicKey(keyStr);
 			return encrypt.encrypt(word);
-		}
+		},
+		joinPath(path1, path2) {
+		        let path = path1;
+		        if (!path.endsWith('/') && !path.endsWith('\\')) {
+		            path = path + "/";
+		        }
+		        if (path2.startsWith('/') || path.startsWith('\\')) {
+		            path = path + path2.slice(1);
+		        } else {
+		            path = path + path2;
+		        }
+		        return path;
+		    }
 	}
 </script>
 
