@@ -420,7 +420,7 @@
 						name: value.base.fileName,
 						extname: value.base.type,
 						url:requset.joinPath(requset.joinPath(uni.getStorageSync("serverUrl"),"v3/files/"), value.base.path) +
-							`?@token=${uni.getStorageSync("hydrocarbon-token")}`,
+							`?@token=${uni.getStorageSync("hydrocarbon-token")}&@programToken=${uni.getStorageSync("hydrocarbon-program-token")}`,
 					}
 				} else if (!value.name) {
 					value = null;

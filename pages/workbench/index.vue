@@ -145,29 +145,24 @@
 			//重点工作
 			var faceplate_statistic = await server.requestFaceplateStatistic_menu();
 			//console.log(data); 
-			if(faceplate_statistic){
-				for (const item of faceplate_statistic) {
-					setInterval(async () => {
-						let count = await server.requestLtmplCount(item.id);
-						item.count = count;
-					}, 180000);
+			for (const item of faceplate_statistic) {
+				setInterval(async () => {
 					let count = await server.requestLtmplCount(item.id);
 					item.count = count;
-					item.url = "../list/list?sourceName=menu&sourceId=" + item.id;
-				}
-				me.faceplateStatistic = faceplate_statistic;
+				}, 180000);
+				let count = await server.requestLtmplCount(item.id);
+				item.count = count;
+				item.url = "../list/list?sourceName=menu&sourceId=" + item.id;
 			}
-			
+			me.faceplateStatistic = faceplate_statistic;
 
 			//日常工作
 			let faceplate_daily = await server.requestFaceplate_menu();
-			if(faceplate_daily){
-				for (const item of faceplate_daily) {
-					item.url = "../list/list?sourceName=menu&sourceId=" + item.id;
-				}
-				me.faceplateDaily = faceplate_daily;
+
+			for (const item of faceplate_daily) {
+				item.url = "../list/list?sourceName=menu&sourceId=" + item.id;
 			}
-			
+			me.faceplateDaily = faceplate_daily;
 			//板块
 			let blocks_res = await server.requestBlocks();
 			if (blocks_res.status == "success") {

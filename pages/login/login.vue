@@ -63,14 +63,20 @@
 				needKaptcha: false,
 			}
 		},
-		async onLoad(options_) {
+		async onLoad(options) {
+			if(options.programCode){
+				uni.setStorageSync("hydrocarbon-program-token", options.programCode);
+			}
+			
+			
 			this.pubkey = await server.getRasPubkey();
 		},
 		methods: {
 			async getKaptchaToken() {
 				let res = await server.getKaptchaToken();
 				if (res) {
-					this.kaptchaImg = `data:image/png;base64,${res.img.replace(/[\r\n]/g, "")}`;
+					//this.kaptchaImg = `data:image/png;base64,${res.img.replace(/[\r\n]/g, "")}`;
+					this.kaptchaImg = res.img.replace(/[\r\n]/g, "");
 					this.kaptchaToken = res.kaptchaToken;
 					this.needKaptcha = true;
 				}

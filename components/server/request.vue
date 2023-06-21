@@ -17,6 +17,7 @@
 					name: 'file',
 					header: {
 						"hydrocarbon-token": uni.getStorageSync("hydrocarbon-token"),
+						"hydrocarbon-program-token":uni.getStorageSync("hydrocarbon-program-token"),
 					},
 					success: (res) => {
 						console.log(res);
@@ -67,6 +68,7 @@
 						"content-type": options.contentType ? options.contentType :
 						"application/x-www-form-urlencoded",
 						"hydrocarbon-token": uni.getStorageSync("hydrocarbon-token"),
+						"hydrocarbon-program-token":uni.getStorageSync("hydrocarbon-program-token"),
 						"hydrocarbon-client": "MOBILE",
 					},
 					method: options.method,
