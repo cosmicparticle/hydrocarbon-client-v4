@@ -144,7 +144,7 @@
 			var me = this;
 			//重点工作
 			var faceplate_statistic = await server.requestFaceplateStatistic_menu();
-			//console.log(data); 
+			//console.log(data);
 			if(faceplate_statistic){
 				for (const item of faceplate_statistic) {
 					setInterval(async () => {
