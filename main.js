@@ -3,8 +3,8 @@ import App from './App'
 
 Vue.config.productionTip = false
 //Vue.prototype.serverUrl="http://121.196.184.205:208/hydrogen/"
-//Vue.prototype.serverUrl="http://localhost:8383/hydrogen/"
-Vue.prototype.serverUrl="/"
+Vue.prototype.serverUrl="http://localhost:8383/hydrogen/"
+//Vue.prototype.serverUrl="/"
 //Vue.prototype.serverUrl="https://121.196.184.205:107/hydrogen/"
 //Vue.prototype.serverUrl="http://121.196.184.205:203/hydrogen/"
 // 索发

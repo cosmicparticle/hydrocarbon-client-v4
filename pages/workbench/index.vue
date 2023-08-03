@@ -13,31 +13,31 @@
 				</swiper-item>
 			</swiper>
 		</view> -->
-		<uni-card :isFull="true" >
+		<uni-card :isFull="true">
 			<view class="row-view">
 				<uni-row>
 					<!--  #ifndef H5 -->
-							<uni-col :span="6">
-								<navigator >
-									<!-- <view class='work-item'> -->
-									<view class='work-item-l2 ipm-work-item-l2'>
-										<view class='work-item-l2-row'>
-											<view class='ipmwork-item-iconfont'>
-												<text class="scanning-iconfont">&#xe8b5;</text>
-											</view>
-										</view>
-										<view class='work-item-l2-row'>
-											<view class='work-item-title'>
-												扫一扫
-											</view>
-										</view>
+					<uni-col :span="6">
+						<navigator>
+							<!-- <view class='work-item'> -->
+							<view class='work-item-l2 ipm-work-item-l2'>
+								<view class='work-item-l2-row'>
+									<view class='ipmwork-item-iconfont'>
+										<text class="scanning-iconfont">&#xe8b5;</text>
 									</view>
-									<!-- </view> -->
-								</navigator>
-							</uni-col>
+								</view>
+								<view class='work-item-l2-row'>
+									<view class='work-item-title'>
+										扫一扫
+									</view>
+								</view>
+							</view>
+							<!-- </view> -->
+						</navigator>
+					</uni-col>
 					<!-- #endif -->
 					<!-- 重点工作 显示数字 -->
-					<view  v-for="(item,index) in faceplateStatistic">
+					<view v-for="(item,index) in faceplateStatistic">
 						<uni-col :span="6">
 							<navigator :url="item.url">
 								<!-- <view class='work-item'> -->
@@ -61,7 +61,7 @@
 			</view>
 		</uni-card>
 		<!-- 快捷入口 -->
-		<uni-card   title='快捷入口' isShadow>
+		<uni-card title='快捷入口' isShadow>
 			<view class="row-view">
 				<uni-row>
 					<view v-for="(item,index) in faceplateDaily">
@@ -70,7 +70,8 @@
 								<view class='work-item-l2'>
 									<view class='work-item-l2-row'>
 										<view class='quick-entrance-logo'>
-											<text class="quick-entrance-iconfont" :style="{'color':colors[index]}">&#xe743;</text>
+											<text class="quick-entrance-iconfont"
+												:style="{'color':colors[index]}">&#xe743;</text>
 										</view>
 									</view>
 									<view class='work-item-l2-row'>
@@ -86,30 +87,33 @@
 			</view>
 		</uni-card>
 		<!-- 嵌套循环下的 uni-collapse 在微信不能正常显示 -->
-		<view  v-for="(block,index1) in blocks">
+		<view v-for="(block,index1) in blocks">
 			<uni-card :margin="false" class="uni-card-wb" :title='block.title' isShadow>
-				<view v-for="(l1Menu,index2) in block.l1Menus">
+				<view v-for="(l1Menu,index2) in block.items">
 					<uni-collapse>
 						<uni-collapse-item :title="l1Menu.title">
 							<view class="row-view">
 								<uni-row>
-									<view v-for="(item,index3) in l1Menu.l2Menus">
-										<uni-col :span="6">
-											<navigator :url="item.url">
-												<view class='work-item-l2'>
-													<view class='work-item-l2-row'>
-														<view class='work-item-logo' :style="{'background-color':colors[index3]}">
-															<text class="l2menu-iconfont">&#xe606;</text>
+									<view v-if="l1Menu.items">
+										<view v-for="(item,index3) in l1Menu.items">
+											<uni-col :span="6">
+												<navigator :url="item.url">
+													<view class='work-item-l2'>
+														<view class='work-item-l2-row'>
+															<view class='work-item-logo'
+																:style="{'background-color':colors[index3]}">
+																<text class="l2menu-iconfont">&#xe606;</text>
+															</view>
+														</view>
+														<view class='work-item-l2-row'>
+															<view class='work-item-title'>
+																{{item.title}}
+															</view>
 														</view>
 													</view>
-													<view class='work-item-l2-row'>
-														<view class='work-item-title'>
-															{{item.title}}
-														</view>
-													</view>
-												</view>
-											</navigator>
-										</uni-col>
+												</navigator>
+											</uni-col>
+										</view>
 									</view>
 								</uni-row>
 							</view>
@@ -133,13 +137,15 @@
 				faceplateStatistic: [],
 				faceplateDaily: [],
 				blocks: [],
-				colors:['#096dd9','#1890ff','#cf1322','#f5222d','#1d39c4','#2f54eb','#d4380d','#fa541c','#d48806','#faad14']
+				colors: ['#096dd9', '#1890ff', '#cf1322', '#f5222d', '#1d39c4', '#2f54eb', '#d4380d', '#fa541c', '#d48806',
+					'#faad14'
+				]
 
 			}
 		},
 		async onLoad() {
 			uni.showLoading({
-				title:"数据加载中..."
+				title: "数据加载中..."
 			});
 			var me = this;
 			//重点工作
@@ -167,9 +173,13 @@
 			let blocks_res = await server.requestBlocks();
 			if (blocks_res.status == "success") {
 				for (const block of blocks_res.blocks) {
-					for (const l1menu of block.l1Menus) {
-						for (const l2menu of l1menu.l2Menus) {
-							l2menu.url = "../list/list?sourceName=menu&sourceId=" + l2menu.id;
+					for (const l1menu of block.items) {
+						if (l1menu.items) {
+							for (const l2menu of l1menu.l2Menus) {
+								l2menu.url = "../list/list?sourceName=menu&sourceId=" + l2menu.id;
+							}
+						} else {
+							l2menu.url = "../list/list?sourceName=menu&sourceId=" + l1menu.id;
 						}
 					}
 				}
@@ -188,12 +198,13 @@
 </script>
 
 <style>
-/* 	page{
+	/* 	page{
 		background-color: #f4f4f4;
 	} */
-	.uni-card-wb{
+	.uni-card-wb {
 		/* margin:12px 5px; */
 	}
+
 	.main {
 		/* background-color: #000; */
 		/* display: flex;
@@ -208,13 +219,15 @@
 		justify-content: center;
 		width: 750upx;
 	}
-	.scanning-iconfont{
+
+	.scanning-iconfont {
 		font-family: iconfont;
 		margin-right: 2rpx;
 		color: #007AFF;
 		font-size: 32px;
 		padding: 10px;
 	}
+
 	.ipmwork-item-iconfont {
 		width: 70upx;
 		height: 70upx;
@@ -302,29 +315,33 @@
 		font-size: 12px;
 		padding-top: 10px;
 	}
-	.quick-entrance-iconfont{
+
+	.quick-entrance-iconfont {
 		font-family: iconfont;
 		margin-right: 2rpx;
 		color: #007AFF;
 		font-size: 40px;
 		padding: 10px;
 	}
-	.l2menu-iconfont{
+
+	.l2menu-iconfont {
 		font-family: iconfont;
 		margin-right: 2rpx;
 		color: #fff;
 		font-size: 32px;
 		padding: 10px;
 	}
-.quick-entrance-logo{
-	width: 72upx;
-	height: 72upx;
-	/* background-color: #fff; */
-	border-radius: 16upx;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-}
+
+	.quick-entrance-logo {
+		width: 72upx;
+		height: 72upx;
+		/* background-color: #fff; */
+		border-radius: 16upx;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
 	.work-item-logo {
 		width: 72upx;
 		height: 72upx;
